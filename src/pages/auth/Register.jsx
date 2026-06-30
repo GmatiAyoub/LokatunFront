@@ -10,14 +10,14 @@ const Register = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [formData, setFormData] = useState({
-    nom: '',
-    prenom: '',
-    email: '',
-    telephone: '',
-    motDePasse: '',
-    role: 'LOCATAIRE',
-  });
+  
+const [formData, setFormData] = useState({
+  nom: '',
+  prenom: '',
+  email: '',
+  telephone: '',
+  motDePasse: '',
+});
 
   const [erreur, setErreur] = useState('');
   const [chargement, setChargement] = useState(false);
@@ -30,6 +30,13 @@ const Register = () => {
     e.preventDefault();
     setErreur('');
     setChargement(true);
+    // Validation numéro tunisien
+const regexTel = /^(2|4|5|9)\d{7}$/;
+if (!regexTel.test(formData.telephone)) {
+  setErreur('Numéro invalide. Entrez 8 chiffres tunisiens (ex: 55123456)');
+  setChargement(false);
+  return;
+}
 
     try {
       const res = await api.post('/auth/register', formData);
@@ -98,7 +105,7 @@ const Register = () => {
           <input
             type="tel"
             name="telephone"
-            placeholder="Numéro de téléphone"
+            placeholder="Numéro tunisien (ex: 55123456)"
             value={formData.telephone}
             onChange={handleChange}
             required
@@ -116,16 +123,6 @@ const Register = () => {
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
-          {/* Rôle */}
-          <select
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="LOCATAIRE">Je veux louer des objets</option>
-            <option value="PROPRIETAIRE">Je veux proposer des objets</option>
-          </select>
 
           {/* Bouton */}
           <button
