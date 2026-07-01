@@ -30,7 +30,7 @@ const Login = () => {
     try {
       const res = await api.post('/auth/login', formData);
       login(res.data.token, res.data.utilisateur);
-      navigate('/dashboard');
+      navigate('/annonces');
     } catch (err) {
       setErreur(err.response?.data?.message || 'Une erreur est survenue');
     } finally {
