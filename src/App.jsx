@@ -11,8 +11,8 @@ import DetailAnnonce from './pages/annonces/DetailAnnonce';
 import CreerAnnonce from './pages/annonces/CreerAnnonce';
 import MesReservations from './pages/reservations/MesReservations';
 import ReservationsRecues from './pages/reservations/ReservationsRecues';
+import SignalerLitige from './pages/litiges/SignalerLitige';
 
-// Route protégée — redirige vers /login si non connecté
 const RouteProtegee = ({ children }) => {
   const { utilisateur, chargement } = useAuth();
   if (chargement) return <div className="text-center mt-20">Chargement...</div>;
@@ -24,55 +24,33 @@ const App = () => {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Auth */}
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
 
-          {/* Annonces publiques */}
           <Route path="/annonces" element={<ListeAnnonces />} />
-
-          {/* ⚠️ /creer AVANT /:id */}
           <Route
             path="/annonces/creer"
-            element={
-              <RouteProtegee>
-                <CreerAnnonce />
-              </RouteProtegee>
-            }
+            element={<RouteProtegee><CreerAnnonce /></RouteProtegee>}
           />
-
-          {/* Détail annonce */}
           <Route path="/annonces/:id" element={<DetailAnnonce />} />
 
-          {/* Réservations */}
           <Route
             path="/mes-reservations"
-            element={
-              <RouteProtegee>
-                <MesReservations />
-              </RouteProtegee>
-            }
+            element={<RouteProtegee><MesReservations /></RouteProtegee>}
           />
           <Route
             path="/reservations-recues"
-            element={
-              <RouteProtegee>
-                <ReservationsRecues />
-              </RouteProtegee>
-            }
+            element={<RouteProtegee><ReservationsRecues /></RouteProtegee>}
           />
-
-          {/* Dashboard */}
+          <Route
+            path="/signaler-litige"
+            element={<RouteProtegee><SignalerLitige /></RouteProtegee>}
+          />
           <Route
             path="/dashboard"
-            element={
-              <RouteProtegee>
-                <Dashboard />
-              </RouteProtegee>
-            }
+            element={<RouteProtegee><Dashboard /></RouteProtegee>}
           />
 
-          {/* Redirection par défaut */}
           <Route path="*" element={<Navigate to="/annonces" />} />
         </Routes>
       </AuthProvider>
