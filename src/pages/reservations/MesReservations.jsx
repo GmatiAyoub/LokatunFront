@@ -16,6 +16,10 @@ const statutColors = {
 const MesReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [chargement, setChargement] = useState(true);
+  const [noteForm, setNoteForm] = useState({});
+  const [commentaireForm, setCommentaireForm] = useState({});
+  const [succesEval, setSuccesEval] = useState({});
+  const [erreurEval, setErreurEval] = useState({});
 
   const charger = async () => {
     try {
@@ -37,6 +41,24 @@ const MesReservations = () => {
       charger();
     } catch (err) {
       alert(err.response?.data?.message || 'Erreur');
+    }
+  };
+
+  const handleEvaluer = async (reservationId, evalueId) => {
+    const note = noteForm[reservationId];
+    const commentaire = commentaireForm[reservationId];
+
+    if (!note) {
+      setErreurEval({ ...erreurEval, [reservationId]: 'Choisissez une note' });
+      return;
+    }
+
+    try {
+      await api.post('/evaluations', { reservationId, evalueId, note, commentaire });
+      setSuccesEval({ ...succesEval, [reservationId]: 'Évaluation soumise !' });
+      setErreurEval({ ...erreurEval, [reservationId]: '' });
+    } catch (err) {
+      setErreurEval({ ...erreurEval, [reservationId]: err.response?.data?.message || 'Erreur' });
     }
   };
 
@@ -123,6 +145,50 @@ const MesReservations = () => {
                   <div className="bg-green-50 rounded-xl p-4 mt-3 text-sm text-green-700">
                     <p className="font-semibold">Paiement Cash</p>
                     <p>Préparez <strong>{r.montantTotal} DT</strong> en espèces lors de la remise de l'objet.</p>
+                  </div>
+                )}
+
+                {/* Évaluation — disponible si TERMINEE */}
+                {r.statut === 'TERMINEE' && (
+                  <div className="mt-4 border-t pt-4">
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Évaluer le propriétaire</p>
+                    {succesEval[r.id] ? (
+                      <p className="text-green-600 text-sm">{succesEval[r.id]}</p>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          {[1, 2, 3, 4, 5].map((n) => (
+                            <button
+                              key={n}
+                              onClick={() => setNoteForm({ ...noteForm, [r.id]: n })}
+                              className={`w-8 h-8 rounded-full text-sm font-bold transition ${
+                                noteForm[r.id] >= n
+                                  ? 'bg-yellow-400 text-white'
+                                  : 'bg-gray-100 text-gray-400'
+                              }`}
+                            >
+                              ★
+                            </button>
+                          ))}
+                        </div>
+                        <textarea
+                          placeholder="Commentaire (optionnel)"
+                          value={commentaireForm[r.id] || ''}
+                          onChange={(e) => setCommentaireForm({ ...commentaireForm, [r.id]: e.target.value })}
+                          rows={2}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        {erreurEval[r.id] && (
+                          <p className="text-red-500 text-sm">{erreurEval[r.id]}</p>
+                        )}
+                        <button
+                          onClick={() => handleEvaluer(r.id, r.annonce.proprietaireId)}
+                          className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition"
+                        >
+                          Soumettre l'évaluation
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
