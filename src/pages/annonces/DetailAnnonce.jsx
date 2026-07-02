@@ -15,6 +15,14 @@ const DetailAnnonce = () => {
   const [photoActive, setPhotoActive] = useState(0);
   const [erreur, setErreur] = useState('');
 
+  // États réservation
+  const [dateDebut, setDateDebut] = useState('');
+  const [dateFin, setDateFin] = useState('');
+  const [methodePaiement, setMethodePaiement] = useState('CASH');
+  const [erreurReservation, setErreurReservation] = useState('');
+  const [succesReservation, setSuccesReservation] = useState('');
+  const [chargementReservation, setChargementReservation] = useState(false);
+
   useEffect(() => {
     const charger = async () => {
       try {
@@ -39,10 +47,31 @@ const DetailAnnonce = () => {
     }
   };
 
+  const handleReserver = async () => {
+    setErreurReservation('');
+    setSuccesReservation('');
+    setChargementReservation(true);
+    try {
+      await api.post('/reservations', {
+        annonceId: id,
+        dateDebut,
+        dateFin,
+        methodePaiement,
+      });
+      setSuccesReservation('Demande envoyée avec succès ! Le propriétaire va vous répondre sous 24h.');
+      setDateDebut('');
+      setDateFin('');
+    } catch (err) {
+      setErreurReservation(err.response?.data?.message || 'Une erreur est survenue');
+    } finally {
+      setChargementReservation(false);
+    }
+  };
+
   if (chargement) return <div className="text-center mt-20 text-gray-500">Chargement...</div>;
   if (erreur) return <div className="text-center mt-20 text-red-500">{erreur}</div>;
 
-  const estProprietaire = utilisateur?.id === annonce.proprietaire.id;
+  const estProprietaire = Number(utilisateur?.id) === Number(annonce.proprietaire.id);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -133,22 +162,69 @@ const DetailAnnonce = () => {
             </div>
 
             {/* Actions */}
-            <div className="mt-6 flex gap-3">
+            <div className="mt-6">
               {estProprietaire ? (
-                <>
-                  <button
-                    onClick={handleSupprimer}
-                    className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition"
+                <button
+                  onClick={handleSupprimer}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition"
+                >
+                  Supprimer l'annonce
+                </button>
+              ) : utilisateur ? (
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-gray-800">Demander une réservation</h3>
+                  <div className="flex gap-3">
+                    <div className="flex-1">
+                      <label className="text-xs text-gray-500">Date de début</label>
+                      <input
+                        type="date"
+                        value={dateDebut}
+                        onChange={(e) => setDateDebut(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="text-xs text-gray-500">Date de fin</label>
+                      <input
+                        type="date"
+                        value={dateFin}
+                        onChange={(e) => setDateFin(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                  <select
+                    value={methodePaiement}
+                    onChange={(e) => setMethodePaiement(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    Supprimer l'annonce
+                    <option value="CASH">Cash à la remise</option>
+                    <option value="D17">D17</option>
+                  </select>
+                  {erreurReservation && (
+                    <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg">
+                      {erreurReservation}
+                    </div>
+                  )}
+                  {succesReservation && (
+                    <div className="bg-green-50 text-green-600 text-sm px-4 py-3 rounded-lg">
+                      {succesReservation}
+                    </div>
+                  )}
+                  <button
+                    onClick={handleReserver}
+                    disabled={chargementReservation}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition disabled:opacity-50"
+                  >
+                    {chargementReservation ? 'Envoi en cours...' : 'Demander la réservation'}
                   </button>
-                </>
+                </div>
               ) : (
                 <button
-                  onClick={() => utilisateur ? alert('Réservation — Sprint 3 !') : navigate('/login')}
+                  onClick={() => navigate('/login')}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition"
                 >
-                  {utilisateur ? 'Réserver cet objet' : 'Connectez-vous pour réserver'}
+                  Connectez-vous pour réserver
                 </button>
               )}
             </div>

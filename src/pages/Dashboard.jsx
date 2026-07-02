@@ -1,8 +1,8 @@
 // ============================================
-// Lokatun — Page Dashboard (temporaire)
+// Lokatun — Page Dashboard
 // ============================================
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Dashboard = () => {
   const { utilisateur, logout } = useAuth();
@@ -14,29 +14,61 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-md w-full max-w-md p-8 text-center">
+    <div className="min-h-screen bg-gray-50">
 
-        <h1 className="text-3xl font-bold text-blue-600 mb-2">Lokatun</h1>
-        <p className="text-gray-500 mb-6">Tableau de bord</p>
+      {/* Header */}
+      <div className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+        <Link to="/annonces" className="text-blue-600 font-bold text-xl">Lokatun</Link>
+      </div>
 
-        <div className="bg-blue-50 rounded-xl p-4 mb-6 text-left">
+      <div className="max-w-2xl mx-auto px-4 py-8">
+
+        {/* Profil */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-4">
           <p className="text-sm text-gray-500">Connecté en tant que</p>
-          <p className="font-semibold text-gray-800">
+          <p className="font-semibold text-gray-800 text-lg">
             {utilisateur?.prenom} {utilisateur?.nom}
           </p>
           <p className="text-sm text-gray-500">{utilisateur?.email}</p>
+          <p className="text-sm text-gray-500">{utilisateur?.telephone}</p>
           <span className="inline-block mt-2 text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-medium">
             {utilisateur?.role}
           </span>
         </div>
 
-        <button
-          onClick={handleLogout}
-          className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-lg transition"
-        >
-          Se déconnecter
-        </button>
+        {/* Actions */}
+        <div className="grid grid-cols-1 gap-3">
+          <Link
+            to="/annonces/creer"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition text-center"
+          >
+            + Publier une annonce
+          </Link>
+          <Link
+            to="/mes-reservations"
+            className="bg-white hover:bg-gray-50 text-gray-800 font-semibold py-3 px-6 rounded-xl transition text-center border border-gray-200 shadow-sm"
+          >
+            Mes réservations
+          </Link>
+          <Link
+            to="/reservations-recues"
+            className="bg-white hover:bg-gray-50 text-gray-800 font-semibold py-3 px-6 rounded-xl transition text-center border border-gray-200 shadow-sm"
+          >
+            Réservations reçues
+          </Link>
+          <Link
+            to="/annonces"
+            className="bg-white hover:bg-gray-50 text-gray-800 font-semibold py-3 px-6 rounded-xl transition text-center border border-gray-200 shadow-sm"
+          >
+            Parcourir les annonces
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition"
+          >
+            Se déconnecter
+          </button>
+        </div>
 
       </div>
     </div>

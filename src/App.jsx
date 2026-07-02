@@ -9,6 +9,8 @@ import Dashboard from './pages/Dashboard';
 import ListeAnnonces from './pages/annonces/ListeAnnonces';
 import DetailAnnonce from './pages/annonces/DetailAnnonce';
 import CreerAnnonce from './pages/annonces/CreerAnnonce';
+import MesReservations from './pages/reservations/MesReservations';
+import ReservationsRecues from './pages/reservations/ReservationsRecues';
 
 // Route protégée — redirige vers /login si non connecté
 const RouteProtegee = ({ children }) => {
@@ -41,6 +43,24 @@ const App = () => {
 
           {/* Détail annonce */}
           <Route path="/annonces/:id" element={<DetailAnnonce />} />
+
+          {/* Réservations */}
+          <Route
+            path="/mes-reservations"
+            element={
+              <RouteProtegee>
+                <MesReservations />
+              </RouteProtegee>
+            }
+          />
+          <Route
+            path="/reservations-recues"
+            element={
+              <RouteProtegee>
+                <ReservationsRecues />
+              </RouteProtegee>
+            }
+          />
 
           {/* Dashboard */}
           <Route
