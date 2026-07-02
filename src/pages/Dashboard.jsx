@@ -31,9 +31,14 @@ const Dashboard = () => {
           </p>
           <p className="text-sm text-gray-500">{utilisateur?.email}</p>
           <p className="text-sm text-gray-500">{utilisateur?.telephone}</p>
-          <span className="inline-block mt-2 text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-medium">
-            {utilisateur?.role}
-          </span>
+          <div className="flex gap-2 mt-2">
+            <span className="text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-medium">
+              {utilisateur?.role}
+            </span>
+            <span className="text-xs bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full font-medium">
+              ⭐ {utilisateur?.noteMoyenne?.toFixed(1)}
+            </span>
+          </div>
         </div>
 
         {/* Actions */}
@@ -55,6 +60,12 @@ const Dashboard = () => {
             className="bg-white hover:bg-gray-50 text-gray-800 font-semibold py-3 px-6 rounded-xl transition text-center border border-gray-200 shadow-sm"
           >
             Réservations reçues
+          </Link>
+          <Link
+            to="/signaler-litige"
+            className="bg-white hover:bg-gray-50 text-orange-600 font-semibold py-3 px-6 rounded-xl transition text-center border border-orange-200 shadow-sm"
+          >
+            ⚠️ Signaler un problème
           </Link>
           <Link
             to="/annonces"
