@@ -16,12 +16,10 @@ const SignalerLitige = () => {
   const [succes, setSucces] = useState('');
   const [chargement, setChargement] = useState(false);
 
-  // Charger les réservations de l'utilisateur
   useEffect(() => {
     const charger = async () => {
       try {
         const res = await api.get('/reservations/mes-reservations');
-        // Garder seulement les réservations ACCEPTEE ou TERMINEE
         const filtrees = res.data.reservations.filter(
           (r) => r.statut === 'ACCEPTEE' || r.statut === 'TERMINEE'
         );
@@ -63,34 +61,48 @@ const SignalerLitige = () => {
     <div className="min-h-screen bg-gray-50">
 
       {/* Header */}
-      <div className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-        <Link to="/annonces" className="text-blue-600 font-bold text-xl">← Lokatun</Link>
-        <Link to="/dashboard" className="text-gray-600 text-sm hover:underline">Mon compte</Link>
+      <div className="bg-secondary-500 px-6 py-4">
+        <div className="max-w-2xl mx-auto flex justify-between items-center">
+          <Link to="/annonces" className="flex items-center gap-2 text-white hover:text-primary-300 transition">
+            <span>←</span>
+            <div className="w-7 h-7 bg-primary-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">L</span>
+            </div>
+            <span className="font-bold">Lokatun</span>
+          </Link>
+          <Link to="/dashboard" className="text-white text-sm hover:text-primary-300 transition">
+            Mon compte
+          </Link>
+        </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-sm p-8">
+        <div className="card p-8">
 
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Signaler un problème</h2>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+              <span className="text-xl">⚠️</span>
+            </div>
+            <h2 className="text-2xl font-bold text-secondary-500">Signaler un problème</h2>
+          </div>
           <p className="text-gray-500 text-sm mb-6">
-            Décrivez le problème rencontré lors de votre location. L'administrateur traitera votre demande sous 24h.
+            Décrivez le problème rencontré. L'administrateur traitera votre demande sous 24h.
           </p>
 
           {erreur && (
-            <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg mb-4">
+            <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl mb-4 border border-red-100">
               {erreur}
             </div>
           )}
 
           {succes && (
-            <div className="bg-green-50 text-green-600 text-sm px-4 py-3 rounded-lg mb-4">
-              {succes}
+            <div className="bg-green-50 text-green-600 text-sm px-4 py-3 rounded-xl mb-4 border border-green-100">
+              ✅ {succes}
             </div>
           )}
 
-          <div className="space-y-4">
+          <div className="space-y-5">
 
-            {/* Sélectionner la réservation */}
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">
                 Réservation concernée
@@ -98,7 +110,7 @@ const SignalerLitige = () => {
               <select
                 value={formData.reservationId}
                 onChange={(e) => setFormData({ ...formData, reservationId: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input-field"
               >
                 <option value="">Sélectionner une réservation</option>
                 {reservations.map((r) => (
@@ -116,7 +128,6 @@ const SignalerLitige = () => {
               )}
             </div>
 
-            {/* Description */}
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">
                 Description du problème
@@ -126,9 +137,11 @@ const SignalerLitige = () => {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={5}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input-field"
               />
-              <p className="text-gray-400 text-xs mt-1">
+              <p className={`text-xs mt-1 ${
+                formData.description.length >= 20 ? 'text-green-500' : 'text-gray-400'
+              }`}>
                 {formData.description.length}/20 caractères minimum
               </p>
             </div>
@@ -136,16 +149,16 @@ const SignalerLitige = () => {
             <button
               onClick={handleSubmit}
               disabled={chargement}
-              className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition disabled:opacity-50"
+              className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 rounded-xl transition disabled:opacity-50"
             >
-              {chargement ? 'Envoi en cours...' : 'Envoyer le signalement'}
+              {chargement ? 'Envoi en cours...' : '🚨 Envoyer le signalement'}
             </button>
 
             <button
               onClick={() => navigate('/mes-reservations')}
               className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition"
             >
-              Retour à mes réservations
+              ← Retour à mes réservations
             </button>
 
           </div>
