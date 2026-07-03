@@ -10,14 +10,13 @@ const Register = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  
-const [formData, setFormData] = useState({
-  nom: '',
-  prenom: '',
-  email: '',
-  telephone: '',
-  motDePasse: '',
-});
+  const [formData, setFormData] = useState({
+    nom: '',
+    prenom: '',
+    email: '',
+    telephone: '',
+    motDePasse: '',
+  });
 
   const [erreur, setErreur] = useState('');
   const [chargement, setChargement] = useState(false);
@@ -29,15 +28,14 @@ const [formData, setFormData] = useState({
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErreur('');
-    setChargement(true);
-    // Validation numéro tunisien
-const regexTel = /^(2|4|5|9)\d{7}$/;
-if (!regexTel.test(formData.telephone)) {
-  setErreur('Numéro invalide. Entrez 8 chiffres tunisiens (ex: 55123456)');
-  setChargement(false);
-  return;
-}
 
+    const regexTel = /^(2|4|5|9)\d{7}$/;
+    if (!regexTel.test(formData.telephone)) {
+      setErreur('Numéro invalide. Entrez 8 chiffres tunisiens (ex: 55123456)');
+      return;
+    }
+
+    setChargement(true);
     try {
       const res = await api.post('/auth/register', formData);
       login(res.data.token, res.data.utilisateur);
@@ -50,96 +48,117 @@ if (!regexTel.test(formData.telephone)) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-md w-full max-w-md p-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md">
 
-        {/* Logo / Titre */}
+        {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-blue-600">Lokatun</h1>
-          <p className="text-gray-500 mt-1">Créer votre compte</p>
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-500 rounded-2xl mb-4">
+            <span className="text-white text-2xl font-bold">L</span>
+          </div>
+          <h1 className="text-3xl font-bold text-secondary-500">Lokatun</h1>
+          <p className="text-gray-500 mt-1">Créer votre compte gratuitement</p>
         </div>
 
-        {/* Message d'erreur */}
-        {erreur && (
-          <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg mb-4">
-            {erreur}
+        <div className="card p-8">
+
+          {erreur && (
+            <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl mb-4 border border-red-100">
+              {erreur}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Nom</label>
+                <input
+                  type="text"
+                  name="nom"
+                  placeholder="Gmati"
+                  value={formData.nom}
+                  onChange={handleChange}
+                  required
+                  className="input-field"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Prénom</label>
+                <input
+                  type="text"
+                  name="prenom"
+                  placeholder="Ayoub"
+                  value={formData.prenom}
+                  onChange={handleChange}
+                  required
+                  className="input-field"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Email</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="votre@email.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="input-field"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Téléphone</label>
+              <input
+                type="tel"
+                name="telephone"
+                placeholder="55123456"
+                value={formData.telephone}
+                onChange={handleChange}
+                required
+                className="input-field"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Mot de passe</label>
+              <input
+                type="password"
+                name="motDePasse"
+                placeholder="••••••••  (min. 8 caractères)"
+                value={formData.motDePasse}
+                onChange={handleChange}
+                required
+                className="input-field"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={chargement}
+              className="w-full btn-primary disabled:opacity-50"
+            >
+              {chargement ? 'Création en cours...' : "S'inscrire gratuitement"}
+            </button>
+
+          </form>
+
+          <div className="mt-6 pt-6 border-t border-gray-100 text-center">
+            <p className="text-sm text-gray-500">
+              Déjà un compte ?{' '}
+              <Link to="/login" className="text-primary-500 font-semibold hover:underline">
+                Se connecter
+              </Link>
+            </p>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        </div>
 
-          {/* Nom + Prénom */}
-          <div className="flex gap-3">
-            <input
-              type="text"
-              name="nom"
-              placeholder="Nom"
-              value={formData.nom}
-              onChange={handleChange}
-              required
-              className="w-1/2 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="text"
-              name="prenom"
-              placeholder="Prénom"
-              value={formData.prenom}
-              onChange={handleChange}
-              required
-              className="w-1/2 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Email */}
-          <input
-            type="email"
-            name="email"
-            placeholder="Adresse email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          {/* Téléphone */}
-          <input
-            type="tel"
-            name="telephone"
-            placeholder="Numéro tunisien (ex: 55123456)"
-            value={formData.telephone}
-            onChange={handleChange}
-            required
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          {/* Mot de passe */}
-          <input
-            type="password"
-            name="motDePasse"
-            placeholder="Mot de passe (min. 8 caractères)"
-            value={formData.motDePasse}
-            onChange={handleChange}
-            required
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-
-          {/* Bouton */}
-          <button
-            type="submit"
-            disabled={chargement}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition disabled:opacity-50"
-          >
-            {chargement ? 'Création en cours...' : "S'inscrire"}
-          </button>
-        </form>
-
-        {/* Lien connexion */}
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Déjà un compte ?{' '}
-          <Link to="/login" className="text-blue-600 font-medium hover:underline">
-            Se connecter
-          </Link>
+        <p className="text-center text-xs text-gray-400 mt-6">
+          © 2025 Lokatun — Location entre particuliers en Tunisie
         </p>
 
       </div>
