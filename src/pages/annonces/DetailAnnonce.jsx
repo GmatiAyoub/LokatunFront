@@ -14,8 +14,6 @@ const DetailAnnonce = () => {
   const [chargement, setChargement] = useState(true);
   const [photoActive, setPhotoActive] = useState(0);
   const [erreur, setErreur] = useState('');
-
-  // États réservation
   const [dateDebut, setDateDebut] = useState('');
   const [dateFin, setDateFin] = useState('');
   const [methodePaiement, setMethodePaiement] = useState('CASH');
@@ -58,7 +56,7 @@ const DetailAnnonce = () => {
         dateFin,
         methodePaiement,
       });
-      setSuccesReservation('Demande envoyée avec succès ! Le propriétaire va vous répondre sous 24h.');
+      setSuccesReservation('Demande envoyée ! Le propriétaire va vous répondre sous 24h.');
       setDateDebut('');
       setDateFin('');
     } catch (err) {
@@ -68,101 +66,155 @@ const DetailAnnonce = () => {
     }
   };
 
-  if (chargement) return <div className="text-center mt-20 text-gray-500">Chargement...</div>;
-  if (erreur) return <div className="text-center mt-20 text-red-500">{erreur}</div>;
+  if (chargement) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-500">Chargement...</p>
+      </div>
+    </div>
+  );
+
+  if (erreur) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-red-500">{erreur}</p>
+    </div>
+  );
 
   const estProprietaire = Number(utilisateur?.id) === Number(annonce.proprietaire.id);
+  const nombreJours = dateDebut && dateFin
+    ? Math.ceil((new Date(dateFin) - new Date(dateDebut)) / (1000 * 60 * 60 * 24))
+    : 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
 
       {/* Header */}
-      <div className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-        <Link to="/annonces" className="text-blue-600 font-bold text-xl">← Lokatun</Link>
-        {utilisateur && (
-          <Link to="/dashboard" className="text-gray-600 text-sm hover:underline">
-            Mon compte
+      <div className="bg-secondary-500 px-6 py-4">
+        <div className="max-w-4xl mx-auto flex justify-between items-center">
+          <Link to="/annonces" className="flex items-center gap-2 text-white hover:text-primary-300 transition">
+            <span>←</span>
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 bg-primary-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">L</span>
+              </div>
+              <span className="font-bold">Lokatun</span>
+            </div>
           </Link>
-        )}
+          {utilisateur && (
+            <Link to="/dashboard" className="text-white text-sm hover:text-primary-300 transition">
+              {utilisateur.prenom}
+            </Link>
+          )}
+        </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* Photos */}
-          {annonce.photos.length > 0 && (
-            <div>
-              <img
-                src={annonce.photos[photoActive].url}
-                alt={annonce.titre}
-                className="w-full h-80 object-cover"
-              />
-              {annonce.photos.length > 1 && (
-                <div className="flex gap-2 p-4">
-                  {annonce.photos.map((photo, index) => (
-                    <img
-                      key={photo.id}
-                      src={photo.url}
-                      alt=""
-                      onClick={() => setPhotoActive(index)}
-                      className={`w-16 h-16 object-cover rounded-lg cursor-pointer border-2 ${
-                        photoActive === index ? 'border-blue-500' : 'border-transparent'
-                      }`}
-                    />
-                  ))}
-                </div>
+          {/* Colonne gauche — Photos + Infos */}
+          <div className="lg:col-span-2 space-y-4">
+
+            {/* Photos */}
+            <div className="card overflow-hidden">
+              {annonce.photos.length > 0 ? (
+                <>
+                  <img
+                    src={annonce.photos[photoActive].url}
+                    alt={annonce.titre}
+                    className="w-full h-80 object-cover"
+                  />
+                  {annonce.photos.length > 1 && (
+                    <div className="flex gap-2 p-3">
+                      {annonce.photos.map((photo, index) => (
+                        <img
+                          key={photo.id}
+                          src={photo.url}
+                          alt=""
+                          onClick={() => setPhotoActive(index)}
+                          className={`w-16 h-16 object-cover rounded-lg cursor-pointer border-2 transition ${
+                            photoActive === index ? 'border-primary-500' : 'border-transparent'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="w-full h-80 bg-gray-100 flex items-center justify-center text-6xl">📷</div>
               )}
             </div>
-          )}
 
-          {/* Infos */}
-          <div className="p-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full">
-                  {annonce.categorie}
-                </span>
-                <h1 className="text-2xl font-bold text-gray-800 mt-2">{annonce.titre}</h1>
-                <p className="text-gray-500 text-sm mt-1">{annonce.localisation}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-3xl font-bold text-blue-600">{annonce.prixParJour} DT</p>
-                <p className="text-gray-400 text-sm">par jour</p>
-              </div>
+            {/* Infos annonce */}
+            <div className="card p-6">
+              <span className="badge">{annonce.categorie}</span>
+              <h1 className="text-2xl font-bold text-secondary-500 mt-3">{annonce.titre}</h1>
+              <p className="text-gray-500 text-sm mt-1 flex items-center gap-1">
+                <span>📍</span> {annonce.localisation}
+              </p>
+              <p className="text-gray-600 mt-4 leading-relaxed">{annonce.description}</p>
             </div>
-
-            <p className="text-gray-600 mt-4">{annonce.description}</p>
 
             {/* Propriétaire */}
-            <div className="bg-gray-50 rounded-xl p-4 mt-6">
-              <p className="text-sm text-gray-500">Proposé par</p>
-              <p className="font-semibold text-gray-800">
-                {annonce.proprietaire.prenom} {annonce.proprietaire.nom}
-              </p>
-              <p className="text-sm text-yellow-500">
-                ⭐ {annonce.proprietaire.noteMoyenne.toFixed(1)}
-              </p>
+            <div className="card p-6">
+              <p className="text-sm font-semibold text-gray-700 mb-3">Proposé par</p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-secondary-500 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">
+                    {annonce.proprietaire.prenom[0]}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">
+                    {annonce.proprietaire.prenom} {annonce.proprietaire.nom}
+                  </p>
+                  <p className="text-yellow-500 text-sm">
+                    ⭐ {annonce.proprietaire.noteMoyenne.toFixed(1)}
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Commission */}
-            <div className="bg-blue-50 rounded-xl p-4 mt-4">
-              <p className="text-sm font-semibold text-blue-700 mb-2">Récapitulatif des frais</p>
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Prix de base</span>
-                <span>{annonce.prixParJour} DT/jour</span>
+          </div>
+
+          {/* Colonne droite — Prix + Réservation */}
+          <div className="space-y-4">
+
+            {/* Prix */}
+            <div className="card p-6">
+              <div className="flex items-end gap-2 mb-4">
+                <span className="text-3xl font-bold text-primary-500">{annonce.prixParJour} DT</span>
+                <span className="text-gray-400 text-sm mb-1">/ jour</span>
               </div>
-              <div className="flex justify-between text-sm text-gray-600 mt-1">
-                <span>Frais de service (5%)</span>
-                <span>{(annonce.prixParJour * 0.05).toFixed(2)} DT</span>
-              </div>
-              <div className="flex justify-between text-sm font-bold text-blue-700 mt-2 border-t pt-2">
-                <span>Total par jour</span>
-                <span>{(annonce.prixParJour * 1.05).toFixed(2)} DT</span>
+
+              {/* Récapitulatif frais */}
+              <div className="bg-orange-50 rounded-xl p-4 text-sm space-y-2">
+                <p className="font-semibold text-secondary-500 mb-3">Récapitulatif des frais</p>
+                <div className="flex justify-between text-gray-600">
+                  <span>Prix de base</span>
+                  <span>{annonce.prixParJour} DT/jour</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Frais de service (5%)</span>
+                  <span>{(annonce.prixParJour * 0.05).toFixed(2)} DT</span>
+                </div>
+                {nombreJours > 0 && (
+                  <>
+                    <div className="flex justify-between text-gray-600">
+                      <span>Durée</span>
+                      <span>{nombreJours} jour(s)</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-primary-500 border-t pt-2">
+                      <span>Total</span>
+                      <span>{(annonce.prixParJour * 1.05 * nombreJours).toFixed(2)} DT</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
             {/* Actions */}
-            <div className="mt-6">
+            <div className="card p-6">
               {estProprietaire ? (
                 <button
                   onClick={handleSupprimer}
@@ -172,60 +224,61 @@ const DetailAnnonce = () => {
                 </button>
               ) : utilisateur ? (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-800">Demander une réservation</h3>
-                  <div className="flex gap-3">
-                    <div className="flex-1">
-                      <label className="text-xs text-gray-500">Date de début</label>
-                      <input
-                        type="date"
-                        value={dateDebut}
-                        onChange={(e) => setDateDebut(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <label className="text-xs text-gray-500">Date de fin</label>
-                      <input
-                        type="date"
-                        value={dateFin}
-                        onChange={(e) => setDateFin(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
+                  <p className="font-semibold text-secondary-500">Réserver cet objet</p>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">Date de début</label>
+                    <input
+                      type="date"
+                      value={dateDebut}
+                      onChange={(e) => setDateDebut(e.target.value)}
+                      className="input-field"
+                    />
                   </div>
-                  <select
-                    value={methodePaiement}
-                    onChange={(e) => setMethodePaiement(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="CASH">Cash à la remise</option>
-                    <option value="D17">D17</option>
-                  </select>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">Date de fin</label>
+                    <input
+                      type="date"
+                      value={dateFin}
+                      onChange={(e) => setDateFin(e.target.value)}
+                      className="input-field"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">Méthode de paiement</label>
+                    <select
+                      value={methodePaiement}
+                      onChange={(e) => setMethodePaiement(e.target.value)}
+                      className="input-field"
+                    >
+                      <option value="CASH">💵 Cash à la remise</option>
+                      <option value="D17">📱 D17</option>
+                    </select>
+                  </div>
                   {erreurReservation && (
-                    <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg">
+                    <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl border border-red-100">
                       {erreurReservation}
                     </div>
                   )}
                   {succesReservation && (
-                    <div className="bg-green-50 text-green-600 text-sm px-4 py-3 rounded-lg">
+                    <div className="bg-green-50 text-green-600 text-sm px-4 py-3 rounded-xl border border-green-100">
                       {succesReservation}
                     </div>
                   )}
                   <button
                     onClick={handleReserver}
                     disabled={chargementReservation}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition disabled:opacity-50"
+                    className="w-full btn-primary disabled:opacity-50"
                   >
-                    {chargementReservation ? 'Envoi en cours...' : 'Demander la réservation'}
+                    {chargementReservation ? 'Envoi...' : 'Demander la réservation'}
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={() => navigate('/login')}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition"
-                >
-                  Connectez-vous pour réserver
-                </button>
+                <div className="text-center">
+                  <p className="text-gray-500 text-sm mb-4">Connectez-vous pour réserver</p>
+                  <Link to="/login" className="w-full btn-primary block text-center">
+                    Se connecter
+                  </Link>
+                </div>
               )}
             </div>
 
