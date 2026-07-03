@@ -73,6 +73,15 @@ const Dashboard = () => {
           >
             Parcourir les annonces
           </Link>
+          {/* Lien Admin — visible uniquement si ADMIN */}
+{utilisateur?.role === 'ADMIN' && (
+  <Link
+    to="/admin"
+    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition text-center"
+  >
+    👑 Panel Admin
+  </Link>
+)}
           <button
             onClick={handleLogout}
             className="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition"
