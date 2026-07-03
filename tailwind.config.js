@@ -5,7 +5,30 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: {
+          50:  '#FFF3E0',
+          100: '#FFE0B2',
+          200: '#FFCC80',
+          300: '#FFB74D',
+          400: '#FFA726',
+          500: '#FF6D00',  // Orange principal
+          600: '#E65100',
+          700: '#BF360C',
+        },
+        secondary: {
+          50:  '#E3EAF0',
+          100: '#B9CCDA',
+          200: '#8FAEC4',
+          300: '#6590AE',
+          400: '#3B7298',
+          500: '#00264D',  // Steel Blue principal
+          600: '#001E3D',
+          700: '#00162D',
+        },
+      },
+    },
   },
   plugins: [],
 }
