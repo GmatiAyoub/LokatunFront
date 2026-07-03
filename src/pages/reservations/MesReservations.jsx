@@ -13,6 +13,14 @@ const statutColors = {
   TERMINEE: 'bg-blue-100 text-blue-700',
 };
 
+const statutIcons = {
+  EN_ATTENTE: '⏳',
+  ACCEPTEE: '✅',
+  REFUSEE: '❌',
+  ANNULEE: '🚫',
+  TERMINEE: '🏁',
+};
+
 const MesReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [chargement, setChargement] = useState(true);
@@ -47,12 +55,10 @@ const MesReservations = () => {
   const handleEvaluer = async (reservationId, evalueId) => {
     const note = noteForm[reservationId];
     const commentaire = commentaireForm[reservationId];
-
     if (!note) {
       setErreurEval({ ...erreurEval, [reservationId]: 'Choisissez une note' });
       return;
     }
-
     try {
       await api.post('/evaluations', { reservationId, evalueId, note, commentaire });
       setSuccesEval({ ...succesEval, [reservationId]: 'Évaluation soumise !' });
@@ -62,60 +68,80 @@ const MesReservations = () => {
     }
   };
 
-  if (chargement) return <div className="text-center mt-20 text-gray-500">Chargement...</div>;
+  if (chargement) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-500">Chargement...</p>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
 
       {/* Header */}
-      <div className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-        <Link to="/annonces" className="text-blue-600 font-bold text-xl">← Lokatun</Link>
-        <Link to="/dashboard" className="text-gray-600 text-sm hover:underline">Mon compte</Link>
+      <div className="bg-secondary-500 px-6 py-4">
+        <div className="max-w-4xl mx-auto flex justify-between items-center">
+          <Link to="/annonces" className="flex items-center gap-2 text-white hover:text-primary-300 transition">
+            <span>←</span>
+            <div className="w-7 h-7 bg-primary-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">L</span>
+            </div>
+            <span className="font-bold">Lokatun</span>
+          </Link>
+          <Link to="/dashboard" className="text-white text-sm hover:text-primary-300 transition">
+            Mon compte
+          </Link>
+        </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Mes Réservations</h2>
+        <h2 className="text-2xl font-bold text-secondary-500 mb-6">Mes Réservations</h2>
 
         {reservations.length === 0 ? (
-          <div className="text-center text-gray-500 py-20">
-            <p>Vous n'avez pas encore de réservations.</p>
-            <Link to="/annonces" className="text-blue-600 hover:underline mt-2 inline-block">
+          <div className="card text-center py-20">
+            <p className="text-4xl mb-4">📅</p>
+            <p className="text-gray-500 font-medium">Vous n'avez pas encore de réservations</p>
+            <Link to="/annonces" className="inline-block mt-4 btn-primary">
               Parcourir les annonces
             </Link>
           </div>
         ) : (
           <div className="space-y-4">
             {reservations.map((r) => (
-              <div key={r.id} className="bg-white rounded-2xl shadow-sm p-6">
-                <div className="flex justify-between items-start">
+              <div key={r.id} className="card p-6">
 
-                  {/* Infos annonce */}
+                {/* Header réservation */}
+                <div className="flex justify-between items-start mb-4">
                   <div className="flex gap-4">
-                    {r.annonce.photos?.[0] && (
+                    {r.annonce.photos?.[0] ? (
                       <img
                         src={r.annonce.photos[0].url}
                         alt={r.annonce.titre}
                         className="w-20 h-20 object-cover rounded-xl"
                       />
+                    ) : (
+                      <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center text-2xl">📷</div>
                     )}
                     <div>
-                      <h3 className="font-semibold text-gray-800">{r.annonce.titre}</h3>
-                      <p className="text-gray-500 text-sm">{r.annonce.localisation}</p>
-                      <p className="text-gray-500 text-sm mt-1">
-                        Du {new Date(r.dateDebut).toLocaleDateString('fr-TN')} au{' '}
+                      <h3 className="font-bold text-secondary-500">{r.annonce.titre}</h3>
+                      <p className="text-gray-400 text-sm flex items-center gap-1">
+                        <span>📍</span>{r.annonce.localisation}
+                      </p>
+                      <p className="text-gray-400 text-sm mt-1">
+                        📅 Du {new Date(r.dateDebut).toLocaleDateString('fr-TN')} au{' '}
                         {new Date(r.dateFin).toLocaleDateString('fr-TN')}
                       </p>
                     </div>
                   </div>
-
-                  {/* Statut */}
-                  <span className={`text-xs px-3 py-1 rounded-full font-medium ${statutColors[r.statut]}`}>
-                    {r.statut.replace('_', ' ')}
+                  <span className={`text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 ${statutColors[r.statut]}`}>
+                    {statutIcons[r.statut]} {r.statut.replace('_', ' ')}
                   </span>
                 </div>
 
                 {/* Récapitulatif financier */}
-                <div className="bg-gray-50 rounded-xl p-4 mt-4 text-sm">
+                <div className="bg-orange-50 rounded-xl p-4 mb-4 text-sm border border-orange-100">
                   <div className="flex justify-between text-gray-600">
                     <span>Montant de base</span>
                     <span>{r.montantBase} DT</span>
@@ -124,47 +150,52 @@ const MesReservations = () => {
                     <span>Frais de service (5%)</span>
                     <span>{r.fraisLocataire} DT</span>
                   </div>
-                  <div className="flex justify-between font-bold text-blue-700 mt-2 border-t pt-2">
+                  <div className="flex justify-between font-bold text-primary-500 mt-2 border-t pt-2">
                     <span>Total payé</span>
                     <span>{r.montantTotal} DT</span>
                   </div>
-                  <div className="flex justify-between text-gray-500 mt-1">
-                    <span>Méthode de paiement</span>
-                    <span>{r.methodePaiement}</span>
+                  <div className="flex justify-between text-gray-400 mt-1">
+                    <span>Paiement</span>
+                    <span>{r.methodePaiement === 'CASH' ? '💵 Cash' : '📱 D17'}</span>
                   </div>
                 </div>
 
                 {/* Instructions paiement */}
                 {r.statut === 'ACCEPTEE' && r.methodePaiement === 'D17' && (
-                  <div className="bg-blue-50 rounded-xl p-4 mt-3 text-sm text-blue-700">
-                    <p className="font-semibold">Instructions D17</p>
-                    <p>Envoyez <strong>{r.montantTotal} DT</strong> au numéro D17 : <strong>+216 22 000 000</strong></p>
+                  <div className="bg-blue-50 rounded-xl p-4 mb-4 border border-blue-100">
+                    <p className="font-semibold text-secondary-500 text-sm mb-1">📱 Instructions D17</p>
+                    <p className="text-gray-600 text-sm">
+                      Envoyez <strong className="text-primary-500">{r.montantTotal} DT</strong> au numéro D17 :
+                      <strong className="text-secondary-500"> +216 22 000 000</strong>
+                    </p>
                   </div>
                 )}
                 {r.statut === 'ACCEPTEE' && r.methodePaiement === 'CASH' && (
-                  <div className="bg-green-50 rounded-xl p-4 mt-3 text-sm text-green-700">
-                    <p className="font-semibold">Paiement Cash</p>
-                    <p>Préparez <strong>{r.montantTotal} DT</strong> en espèces lors de la remise de l'objet.</p>
+                  <div className="bg-green-50 rounded-xl p-4 mb-4 border border-green-100">
+                    <p className="font-semibold text-green-700 text-sm mb-1">💵 Paiement Cash</p>
+                    <p className="text-gray-600 text-sm">
+                      Préparez <strong className="text-primary-500">{r.montantTotal} DT</strong> en espèces lors de la remise.
+                    </p>
                   </div>
                 )}
 
-                {/* Évaluation — disponible si TERMINEE */}
+                {/* Évaluation */}
                 {r.statut === 'TERMINEE' && (
-                  <div className="mt-4 border-t pt-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">Évaluer le propriétaire</p>
+                  <div className="border-t pt-4 mt-2">
+                    <p className="text-sm font-semibold text-secondary-500 mb-3">Évaluer le propriétaire</p>
                     {succesEval[r.id] ? (
-                      <p className="text-green-600 text-sm">{succesEval[r.id]}</p>
+                      <p className="text-green-600 text-sm bg-green-50 px-4 py-2 rounded-xl">✅ {succesEval[r.id]}</p>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <div className="flex gap-2">
                           {[1, 2, 3, 4, 5].map((n) => (
                             <button
                               key={n}
                               onClick={() => setNoteForm({ ...noteForm, [r.id]: n })}
-                              className={`w-8 h-8 rounded-full text-sm font-bold transition ${
+                              className={`w-10 h-10 rounded-xl text-lg font-bold transition ${
                                 noteForm[r.id] >= n
-                                  ? 'bg-yellow-400 text-white'
-                                  : 'bg-gray-100 text-gray-400'
+                                  ? 'bg-yellow-400 text-white shadow-sm'
+                                  : 'bg-gray-100 text-gray-300 hover:bg-yellow-100'
                               }`}
                             >
                               ★
@@ -176,14 +207,14 @@ const MesReservations = () => {
                           value={commentaireForm[r.id] || ''}
                           onChange={(e) => setCommentaireForm({ ...commentaireForm, [r.id]: e.target.value })}
                           rows={2}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="input-field"
                         />
                         {erreurEval[r.id] && (
                           <p className="text-red-500 text-sm">{erreurEval[r.id]}</p>
                         )}
                         <button
                           onClick={() => handleEvaluer(r.id, r.annonce.proprietaireId)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition"
+                          className="btn-primary text-sm py-2"
                         >
                           Soumettre l'évaluation
                         </button>
@@ -196,7 +227,7 @@ const MesReservations = () => {
                 {r.statut === 'EN_ATTENTE' && (
                   <button
                     onClick={() => handleAnnuler(r.id)}
-                    className="mt-4 text-sm text-red-500 hover:underline"
+                    className="mt-4 text-sm text-red-500 hover:text-red-600 hover:underline transition"
                   >
                     Annuler la réservation
                   </button>
