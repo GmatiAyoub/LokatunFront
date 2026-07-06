@@ -13,7 +13,7 @@ export default {
           200: '#FFCC80',
           300: '#FFB74D',
           400: '#FFA726',
-          500: '#FF6D00',  // Orange principal
+          500: '#FF6D00',
           600: '#E65100',
           700: '#BF360C',
         },
@@ -23,10 +23,19 @@ export default {
           200: '#8FAEC4',
           300: '#6590AE',
           400: '#3B7298',
-          500: '#00264D',  // Steel Blue principal
+          500: '#00264D',
           600: '#001E3D',
           700: '#00162D',
         },
+        sand: {
+          50:  '#FFFDF9',
+          100: '#FFF8F0',
+          200: '#FFEFD8',
+          300: '#FFE4C0',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
     },
   },
