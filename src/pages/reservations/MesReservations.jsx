@@ -78,7 +78,7 @@ const MesReservations = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-sand-100">
 
       {/* Header */}
       <div className="bg-secondary-500 px-6 py-4">
@@ -140,6 +140,17 @@ const MesReservations = () => {
                   </span>
                 </div>
 
+                {/* Message EN_ATTENTE */}
+                {r.statut === 'EN_ATTENTE' && (
+                  <div className="bg-yellow-50 rounded-xl p-4 mb-4 border border-yellow-100">
+                    <p className="text-yellow-700 text-sm font-semibold mb-1">⏳ En attente de confirmation</p>
+                    <p className="text-gray-500 text-xs">
+                      Le propriétaire a 24h pour accepter ou refuser votre demande.
+                      Le contact ne sera visible qu'après acceptation.
+                    </p>
+                  </div>
+                )}
+
                 {/* Récapitulatif financier */}
                 <div className="bg-orange-50 rounded-xl p-4 mb-4 text-sm border border-orange-100">
                   <div className="flex justify-between text-gray-600">
@@ -156,9 +167,30 @@ const MesReservations = () => {
                   </div>
                   <div className="flex justify-between text-gray-400 mt-1">
                     <span>Paiement</span>
-                    <span>{r.methodePaiement === 'CASH' ? '💵 Cash' : '📱 D17'}</span>
+                    <span>{r.methodePaiement === 'CASH' ? '💵 Cash' : '💳 Carte / D17'}</span>
                   </div>
                 </div>
+
+                {/* Contact propriétaire — visible UNIQUEMENT si ACCEPTEE */}
+                {r.statut === 'ACCEPTEE' && (
+                  <div className="bg-secondary-500 rounded-xl p-4 mb-4">
+                    <p className="text-white text-sm font-semibold mb-2">
+                      🎉 Réservation acceptée !
+                    </p>
+                    <div className="bg-white bg-opacity-10 rounded-lg p-3">
+                      <p className="text-blue-200 text-xs mb-1">Contact du propriétaire</p>
+                      <p className="text-white font-semibold">
+                        {r.annonce.proprietaire?.prenom} {r.annonce.proprietaire?.nom}
+                      </p>
+                      <p className="text-primary-300 font-bold text-xl mt-1">
+                        📞 {r.annonce.proprietaire?.telephone}
+                      </p>
+                      <p className="text-blue-200 text-xs mt-2">
+                        Contactez-le pour organiser la remise de l'objet
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 {/* Instructions paiement */}
                 {r.statut === 'ACCEPTEE' && r.methodePaiement === 'D17' && (
@@ -177,6 +209,16 @@ const MesReservations = () => {
                       Préparez <strong className="text-primary-500">{r.montantTotal} DT</strong> en espèces lors de la remise.
                     </p>
                   </div>
+                )}
+
+                {/* ── Bouton Paiement Lokatun — visible si ACCEPTEE ── */}
+                {r.statut === 'ACCEPTEE' && (
+                  <Link
+                    to={`/paiement/${r.id}`}
+                    className="w-full btn-primary text-center mt-2 mb-2 block"
+                  >
+                    💳 Payer les frais Lokatun ({r.fraisLocataire} DT)
+                  </Link>
                 )}
 
                 {/* Évaluation */}

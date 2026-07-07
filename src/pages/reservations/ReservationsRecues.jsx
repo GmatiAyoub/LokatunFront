@@ -113,8 +113,9 @@ const ReservationsRecues = () => {
                           {r.locataire.prenom} {r.locataire.nom}
                         </p>
                       </div>
-                      <p className="text-gray-400 text-sm">📞 {r.locataire.telephone}</p>
-                      <p className="text-gray-400 text-sm mt-1">
+{r.statut === 'ACCEPTEE' && (
+  <p className="text-gray-400 text-sm">📞 {r.locataire.telephone}</p>
+)}                      <p className="text-gray-400 text-sm mt-1">
                         📅 Du {new Date(r.dateDebut).toLocaleDateString('fr-TN')} au{' '}
                         {new Date(r.dateFin).toLocaleDateString('fr-TN')}
                       </p>
@@ -141,7 +142,7 @@ const ReservationsRecues = () => {
                   </div>
                   <div className="flex justify-between text-gray-400 mt-1">
                     <span>Paiement</span>
-                    <span>{r.methodePaiement === 'CASH' ? '💵 Cash' : '📱 D17'}</span>
+                    <span>{r.methodePaiement === 'CASH' ? '💵 Cash' : '💳 Carte / D17'}</span>
                   </div>
                 </div>
 

@@ -249,9 +249,9 @@ const DetailAnnonce = () => {
                       value={methodePaiement}
                       onChange={(e) => setMethodePaiement(e.target.value)}
                       className="input-field"
-                    >
-                      <option value="CASH">💵 Cash à la remise</option>
-                      <option value="D17">📱 D17</option>
+                  >
+                    <option value="CASH">💵 Cash à la remise</option>
+                    <option value="CARTE">💳 Carte bancaire / D17 (via Konnect)</option>
                     </select>
                   </div>
                   {erreurReservation && (

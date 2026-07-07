@@ -16,6 +16,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUtilisateurs from './pages/admin/AdminUtilisateurs';
 import AdminAnnonces from './pages/admin/AdminAnnonces';
 import AdminLitiges from './pages/admin/AdminLitiges';
+import Paiement from './pages/paiement/Paiement';
 
 const RouteProtegee = ({ children }) => {
   const { utilisateur, chargement } = useAuth();
@@ -53,6 +54,10 @@ const App = () => {
             path="/mes-reservations"
             element={<RouteProtegee><MesReservations /></RouteProtegee>}
           />
+          <Route
+  path="/paiement/:reservationId"
+  element={<RouteProtegee><Paiement /></RouteProtegee>}
+/>
           <Route
             path="/reservations-recues"
             element={<RouteProtegee><ReservationsRecues /></RouteProtegee>}
