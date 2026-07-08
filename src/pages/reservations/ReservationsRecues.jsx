@@ -7,15 +7,17 @@ import api from '../../api/axios';
 
 const statutColors = {
   EN_ATTENTE: 'bg-yellow-100 text-yellow-700',
-  ACCEPTEE: 'bg-green-100 text-green-700',
+  ACCEPTEE: 'bg-blue-100 text-blue-700',
+  PAYEE: 'bg-green-100 text-green-700',
   REFUSEE: 'bg-red-100 text-red-700',
   ANNULEE: 'bg-gray-100 text-gray-700',
-  TERMINEE: 'bg-blue-100 text-blue-700',
+  TERMINEE: 'bg-purple-100 text-purple-700',
 };
 
 const statutIcons = {
   EN_ATTENTE: '⏳',
   ACCEPTEE: '✅',
+  PAYEE: '💰',
   REFUSEE: '❌',
   ANNULEE: '🚫',
   TERMINEE: '🏁',
@@ -113,7 +115,8 @@ const ReservationsRecues = () => {
                           {r.locataire.prenom} {r.locataire.nom}
                         </p>
                       </div>
-{r.statut === 'ACCEPTEE' && (
+{/* Téléphone — visible uniquement si PAYEE ou TERMINEE */}
+{(r.statut === 'PAYEE' || r.statut === 'TERMINEE') && (
   <p className="text-gray-400 text-sm">📞 {r.locataire.telephone}</p>
 )}                      <p className="text-gray-400 text-sm mt-1">
                         📅 Du {new Date(r.dateDebut).toLocaleDateString('fr-TN')} au{' '}

@@ -32,8 +32,13 @@ const Paiement = () => {
   }, [reservationId]);
 
   const handleConfirmerPaiement = async () => {
+  try {
+    await api.put(`/reservations/${reservationId}/payer`);
     setEtape(3);
-  };
+  } catch (err) {
+    alert(err.response?.data?.message || 'Erreur lors de la confirmation');
+  }
+};
 
   if (chargement) return (
     <div className="min-h-screen flex items-center justify-center">

@@ -7,15 +7,17 @@ import api from '../../api/axios';
 
 const statutColors = {
   EN_ATTENTE: 'bg-yellow-100 text-yellow-700',
-  ACCEPTEE: 'bg-green-100 text-green-700',
+  ACCEPTEE: 'bg-blue-100 text-blue-700',
+  PAYEE: 'bg-green-100 text-green-700',
   REFUSEE: 'bg-red-100 text-red-700',
   ANNULEE: 'bg-gray-100 text-gray-700',
-  TERMINEE: 'bg-blue-100 text-blue-700',
+  TERMINEE: 'bg-purple-100 text-purple-700',
 };
 
 const statutIcons = {
   EN_ATTENTE: '⏳',
   ACCEPTEE: '✅',
+  PAYEE: '💰',
   REFUSEE: '❌',
   ANNULEE: '🚫',
   TERMINEE: '🏁',
@@ -146,7 +148,17 @@ const MesReservations = () => {
                     <p className="text-yellow-700 text-sm font-semibold mb-1">⏳ En attente de confirmation</p>
                     <p className="text-gray-500 text-xs">
                       Le propriétaire a 24h pour accepter ou refuser votre demande.
-                      Le contact ne sera visible qu'après acceptation.
+                      Le contact ne sera visible qu'après paiement des frais.
+                    </p>
+                  </div>
+                )}
+
+                {/* Message ACCEPTEE — paiement requis */}
+                {r.statut === 'ACCEPTEE' && (
+                  <div className="bg-blue-50 rounded-xl p-4 mb-4 border border-blue-100">
+                    <p className="text-blue-700 text-sm font-semibold mb-1">✅ Réservation acceptée !</p>
+                    <p className="text-gray-500 text-xs">
+                      Payez les frais de service Lokatun pour obtenir le contact du propriétaire.
                     </p>
                   </div>
                 )}
@@ -158,11 +170,11 @@ const MesReservations = () => {
                     <span>{r.montantBase} DT</span>
                   </div>
                   <div className="flex justify-between text-gray-600 mt-1">
-                    <span>Frais de service (5%)</span>
+                    <span>Frais de service Lokatun (5%)</span>
                     <span>{r.fraisLocataire} DT</span>
                   </div>
                   <div className="flex justify-between font-bold text-primary-500 mt-2 border-t pt-2">
-                    <span>Total payé</span>
+                    <span>Total</span>
                     <span>{r.montantTotal} DT</span>
                   </div>
                   <div className="flex justify-between text-gray-400 mt-1">
@@ -171,11 +183,21 @@ const MesReservations = () => {
                   </div>
                 </div>
 
-                {/* Contact propriétaire — visible UNIQUEMENT si ACCEPTEE */}
+                {/* Bouton paiement — visible si ACCEPTEE uniquement */}
                 {r.statut === 'ACCEPTEE' && (
+                  <Link
+                    to={`/paiement/${r.id}`}
+                    className="w-full btn-primary text-center mt-2 mb-4 block"
+                  >
+                    💳 Payer les frais Lokatun ({r.fraisLocataire} DT)
+                  </Link>
+                )}
+
+                {/* Contact propriétaire — visible UNIQUEMENT si PAYEE ou TERMINEE */}
+                {(r.statut === 'PAYEE' || r.statut === 'TERMINEE') && (
                   <div className="bg-secondary-500 rounded-xl p-4 mb-4">
                     <p className="text-white text-sm font-semibold mb-2">
-                      🎉 Réservation acceptée !
+                      💰 Paiement confirmé — Contact débloqué !
                     </p>
                     <div className="bg-white bg-opacity-10 rounded-lg p-3">
                       <p className="text-blue-200 text-xs mb-1">Contact du propriétaire</p>
@@ -192,33 +214,24 @@ const MesReservations = () => {
                   </div>
                 )}
 
-                {/* Instructions paiement */}
-                {r.statut === 'ACCEPTEE' && r.methodePaiement === 'D17' && (
+                {/* Instructions paiement CARTE */}
+                {r.statut === 'PAYEE' && r.methodePaiement === 'CARTE' && (
                   <div className="bg-blue-50 rounded-xl p-4 mb-4 border border-blue-100">
-                    <p className="font-semibold text-secondary-500 text-sm mb-1">📱 Instructions D17</p>
+                    <p className="font-semibold text-secondary-500 text-sm mb-1">💳 Paiement carte confirmé</p>
                     <p className="text-gray-600 text-sm">
-                      Envoyez <strong className="text-primary-500">{r.montantTotal} DT</strong> au numéro D17 :
-                      <strong className="text-secondary-500"> +216 22 000 000</strong>
-                    </p>
-                  </div>
-                )}
-                {r.statut === 'ACCEPTEE' && r.methodePaiement === 'CASH' && (
-                  <div className="bg-green-50 rounded-xl p-4 mb-4 border border-green-100">
-                    <p className="font-semibold text-green-700 text-sm mb-1">💵 Paiement Cash</p>
-                    <p className="text-gray-600 text-sm">
-                      Préparez <strong className="text-primary-500">{r.montantTotal} DT</strong> en espèces lors de la remise.
+                      Vos frais de <strong className="text-primary-500">{r.fraisLocataire} DT</strong> ont été reçus par Lokatun.
                     </p>
                   </div>
                 )}
 
-                {/* ── Bouton Paiement Lokatun — visible si ACCEPTEE ── */}
-                {r.statut === 'ACCEPTEE' && (
-                  <Link
-                    to={`/paiement/${r.id}`}
-                    className="w-full btn-primary text-center mt-2 mb-2 block"
-                  >
-                    💳 Payer les frais Lokatun ({r.fraisLocataire} DT)
-                  </Link>
+                {/* Instructions paiement CASH */}
+                {r.statut === 'PAYEE' && r.methodePaiement === 'CASH' && (
+                  <div className="bg-green-50 rounded-xl p-4 mb-4 border border-green-100">
+                    <p className="font-semibold text-green-700 text-sm mb-1">💵 Paiement postal en cours de vérification</p>
+                    <p className="text-gray-600 text-sm">
+                      Préparez <strong className="text-primary-500">{r.montantBase} DT</strong> en espèces pour la remise au propriétaire.
+                    </p>
+                  </div>
                 )}
 
                 {/* Évaluation */}
