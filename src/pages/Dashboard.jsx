@@ -3,10 +3,14 @@
 // ============================================
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 const Dashboard = () => {
   const { utilisateur, logout } = useAuth();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'darija';
 
   const handleLogout = () => {
     logout();
@@ -14,7 +18,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-sand-100" dir={isRTL ? 'rtl' : 'ltr'}>
 
       {/* Header */}
       <div className="bg-secondary-500 px-6 py-4">
@@ -25,6 +29,7 @@ const Dashboard = () => {
             </div>
             <span className="font-bold">Lokatun</span>
           </Link>
+          <LanguageSwitcher />
         </div>
       </div>
 
@@ -59,11 +64,8 @@ const Dashboard = () => {
         {/* Actions */}
         <div className="grid grid-cols-1 gap-3">
 
-          <Link
-            to="/annonces/creer"
-            className="btn-primary text-center"
-          >
-            + Publier une annonce
+          <Link to="/annonces/creer" className="btn-primary text-center">
+            {t('publierAnnonce')}
           </Link>
 
           <div className="grid grid-cols-2 gap-3">
@@ -72,14 +74,14 @@ const Dashboard = () => {
               className="card p-4 text-center hover:border-primary-200 border border-transparent"
             >
               <p className="text-2xl mb-1">📅</p>
-              <p className="font-semibold text-secondary-500 text-sm">Mes réservations</p>
+              <p className="font-semibold text-secondary-500 text-sm">{t('mesReservations')}</p>
             </Link>
             <Link
               to="/reservations-recues"
               className="card p-4 text-center hover:border-primary-200 border border-transparent"
             >
               <p className="text-2xl mb-1">📬</p>
-              <p className="font-semibold text-secondary-500 text-sm">Réservations reçues</p>
+              <p className="font-semibold text-secondary-500 text-sm">{t('reservationsRecues')}</p>
             </Link>
           </div>
 
@@ -88,7 +90,7 @@ const Dashboard = () => {
             className="card p-4 text-center hover:border-primary-200 border border-transparent"
           >
             <p className="text-2xl mb-1">🔍</p>
-            <p className="font-semibold text-secondary-500 text-sm">Parcourir les annonces</p>
+            <p className="font-semibold text-secondary-500 text-sm">{t('parcourirAnnonces')}</p>
           </Link>
 
           <Link
@@ -96,17 +98,16 @@ const Dashboard = () => {
             className="card p-4 text-center border border-orange-200 hover:bg-orange-50 transition"
           >
             <p className="text-2xl mb-1">⚠️</p>
-            <p className="font-semibold text-primary-500 text-sm">Signaler un problème</p>
+            <p className="font-semibold text-primary-500 text-sm">{t('signalerProbleme')}</p>
           </Link>
 
-          {/* Lien Admin */}
           {utilisateur?.role === 'ADMIN' && (
             <Link
               to="/admin"
               className="card p-4 text-center border border-purple-200 hover:bg-purple-50 transition"
             >
               <p className="text-2xl mb-1">👑</p>
-              <p className="font-semibold text-purple-600 text-sm">Panel Admin</p>
+              <p className="font-semibold text-purple-600 text-sm">{t('panelAdmin')}</p>
             </Link>
           )}
 
@@ -114,7 +115,7 @@ const Dashboard = () => {
             onClick={handleLogout}
             className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition"
           >
-            Se déconnecter
+            {t('seDeconnecter')}
           </button>
 
         </div>

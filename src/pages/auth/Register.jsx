@@ -3,12 +3,16 @@
 // ============================================
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 const Register = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'darija';
 
   const [formData, setFormData] = useState({
     nom: '',
@@ -48,8 +52,13 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="w-full max-w-md">
+
+        {/* Switcher langue */}
+        <div className="flex justify-end mb-4">
+          <LanguageSwitcher />
+        </div>
 
         {/* Logo */}
         <div className="text-center mb-8">
@@ -57,11 +66,10 @@ const Register = () => {
             <span className="text-white text-2xl font-bold">L</span>
           </div>
           <h1 className="text-3xl font-bold text-secondary-500">Lokatun</h1>
-          <p className="text-gray-500 mt-1">Créer votre compte gratuitement</p>
+          <p className="text-gray-500 mt-1">{t('creerCompte')}</p>
         </div>
 
         <div className="card p-8">
-
           {erreur && (
             <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl mb-4 border border-red-100">
               {erreur}
@@ -69,10 +77,9 @@ const Register = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-
             <div className="flex gap-3">
               <div className="flex-1">
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Nom</label>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">{t('nom')}</label>
                 <input
                   type="text"
                   name="nom"
@@ -84,7 +91,7 @@ const Register = () => {
                 />
               </div>
               <div className="flex-1">
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Prénom</label>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">{t('prenom')}</label>
                 <input
                   type="text"
                   name="prenom"
@@ -98,7 +105,7 @@ const Register = () => {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Email</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">{t('email')}</label>
               <input
                 type="email"
                 name="email"
@@ -111,7 +118,7 @@ const Register = () => {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Téléphone</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">{t('telephone')}</label>
               <input
                 type="tel"
                 name="telephone"
@@ -124,11 +131,11 @@ const Register = () => {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">Mot de passe</label>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">{t('motDePasse')}</label>
               <input
                 type="password"
                 name="motDePasse"
-                placeholder="••••••••  (min. 8 caractères)"
+                placeholder="••••••••"
                 value={formData.motDePasse}
                 onChange={handleChange}
                 required
@@ -141,26 +148,23 @@ const Register = () => {
               disabled={chargement}
               className="w-full btn-primary disabled:opacity-50"
             >
-              {chargement ? 'Création en cours...' : "S'inscrire gratuitement"}
+              {chargement ? '...' : t('sInscrire')}
             </button>
-
           </form>
 
           <div className="mt-6 pt-6 border-t border-gray-100 text-center">
             <p className="text-sm text-gray-500">
-              Déjà un compte ?{' '}
+              {t('dejaunCompte')}{' '}
               <Link to="/login" className="text-primary-500 font-semibold hover:underline">
-                Se connecter
+                {t('seConnecter')}
               </Link>
             </p>
           </div>
-
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">
-          © 2025 Lokatun — Location entre particuliers en Tunisie
+          © 2025 Lokatun
         </p>
-
       </div>
     </div>
   );

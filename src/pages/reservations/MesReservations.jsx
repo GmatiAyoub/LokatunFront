@@ -3,7 +3,9 @@
 // ============================================
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../../api/axios';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 const statutColors = {
   EN_ATTENTE: 'bg-yellow-100 text-yellow-700',
@@ -24,6 +26,8 @@ const statutIcons = {
 };
 
 const MesReservations = () => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'darija';
   const [reservations, setReservations] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [noteForm, setNoteForm] = useState({});
@@ -80,7 +84,7 @@ const MesReservations = () => {
   );
 
   return (
-    <div className="min-h-screen bg-sand-100">
+    <div className="min-h-screen bg-sand-100" dir={isRTL ? 'rtl' : 'ltr'}>
 
       {/* Header */}
       <div className="bg-secondary-500 px-6 py-4">
@@ -92,21 +96,24 @@ const MesReservations = () => {
             </div>
             <span className="font-bold">Lokatun</span>
           </Link>
-          <Link to="/dashboard" className="text-white text-sm hover:text-primary-300 transition">
-            Mon compte
-          </Link>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <Link to="/dashboard" className="text-white text-sm hover:text-primary-300 transition">
+              {t('monCompte')}
+            </Link>
+          </div>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-secondary-500 mb-6">Mes Réservations</h2>
+        <h2 className="text-2xl font-bold text-secondary-500 mb-6">{t('mesReservations')}</h2>
 
         {reservations.length === 0 ? (
           <div className="card text-center py-20">
             <p className="text-4xl mb-4">📅</p>
             <p className="text-gray-500 font-medium">Vous n'avez pas encore de réservations</p>
             <Link to="/annonces" className="inline-block mt-4 btn-primary">
-              Parcourir les annonces
+              {t('parcourirAnnonces')}
             </Link>
           </div>
         ) : (
@@ -118,11 +125,7 @@ const MesReservations = () => {
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex gap-4">
                     {r.annonce.photos?.[0] ? (
-                      <img
-                        src={r.annonce.photos[0].url}
-                        alt={r.annonce.titre}
-                        className="w-20 h-20 object-cover rounded-xl"
-                      />
+                      <img src={r.annonce.photos[0].url} alt={r.annonce.titre} className="w-20 h-20 object-cover rounded-xl" />
                     ) : (
                       <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center text-2xl">📷</div>
                     )}
@@ -138,14 +141,14 @@ const MesReservations = () => {
                     </div>
                   </div>
                   <span className={`text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 ${statutColors[r.statut]}`}>
-                    {statutIcons[r.statut]} {r.statut.replace('_', ' ')}
+                    {statutIcons[r.statut]} {t(r.statut.toLowerCase()) || r.statut.replace('_', ' ')}
                   </span>
                 </div>
 
                 {/* Message EN_ATTENTE */}
                 {r.statut === 'EN_ATTENTE' && (
                   <div className="bg-yellow-50 rounded-xl p-4 mb-4 border border-yellow-100">
-                    <p className="text-yellow-700 text-sm font-semibold mb-1">⏳ En attente de confirmation</p>
+                    <p className="text-yellow-700 text-sm font-semibold mb-1">⏳ {t('enAttente')}</p>
                     <p className="text-gray-500 text-xs">
                       Le propriétaire a 24h pour accepter ou refuser votre demande.
                       Le contact ne sera visible qu'après paiement des frais.
@@ -153,10 +156,10 @@ const MesReservations = () => {
                   </div>
                 )}
 
-                {/* Message ACCEPTEE — paiement requis */}
+                {/* Message ACCEPTEE */}
                 {r.statut === 'ACCEPTEE' && (
                   <div className="bg-blue-50 rounded-xl p-4 mb-4 border border-blue-100">
-                    <p className="text-blue-700 text-sm font-semibold mb-1">✅ Réservation acceptée !</p>
+                    <p className="text-blue-700 text-sm font-semibold mb-1">✅ {t('acceptee')}</p>
                     <p className="text-gray-500 text-xs">
                       Payez les frais de service Lokatun pour obtenir le contact du propriétaire.
                     </p>
@@ -166,61 +169,49 @@ const MesReservations = () => {
                 {/* Récapitulatif financier */}
                 <div className="bg-orange-50 rounded-xl p-4 mb-4 text-sm border border-orange-100">
                   <div className="flex justify-between text-gray-600">
-                    <span>Montant de base</span>
+                    <span>{t('montantBase')}</span>
                     <span>{r.montantBase} DT</span>
                   </div>
                   <div className="flex justify-between text-gray-600 mt-1">
-                    <span>Frais de service Lokatun (5%)</span>
+                    <span>{t('fraisService')}</span>
                     <span>{r.fraisLocataire} DT</span>
                   </div>
                   <div className="flex justify-between font-bold text-primary-500 mt-2 border-t pt-2">
-                    <span>Total</span>
+                    <span>{t('total')}</span>
                     <span>{r.montantTotal} DT</span>
                   </div>
                   <div className="flex justify-between text-gray-400 mt-1">
-                    <span>Paiement</span>
+                    <span>{t('paiement')}</span>
                     <span>{r.methodePaiement === 'CASH' ? '💵 Cash' : '💳 Carte / D17'}</span>
                   </div>
                 </div>
 
-                {/* Bouton paiement — visible si ACCEPTEE uniquement */}
+                {/* Bouton paiement */}
                 {r.statut === 'ACCEPTEE' && (
                   <Link
                     to={`/paiement/${r.id}`}
                     className="w-full btn-primary text-center mt-2 mb-4 block"
                   >
-                    💳 Payer les frais Lokatun ({r.fraisLocataire} DT)
+                    {t('payerFrais')} ({r.fraisLocataire} DT)
                   </Link>
                 )}
 
-                {/* Contact propriétaire — visible UNIQUEMENT si PAYEE ou TERMINEE */}
+                {/* Contact propriétaire */}
                 {(r.statut === 'PAYEE' || r.statut === 'TERMINEE') && (
                   <div className="bg-secondary-500 rounded-xl p-4 mb-4">
                     <p className="text-white text-sm font-semibold mb-2">
-                      💰 Paiement confirmé — Contact débloqué !
+                      {t('contactDebloque')}
                     </p>
                     <div className="bg-white bg-opacity-10 rounded-lg p-3">
-                      <p className="text-blue-200 text-xs mb-1">Contact du propriétaire</p>
+                      <p className="text-blue-200 text-xs mb-1">{t('contactProprietaire')}</p>
                       <p className="text-white font-semibold">
                         {r.annonce.proprietaire?.prenom} {r.annonce.proprietaire?.nom}
                       </p>
                       <p className="text-primary-300 font-bold text-xl mt-1">
                         📞 {r.annonce.proprietaire?.telephone}
                       </p>
-                      <p className="text-blue-200 text-xs mt-2">
-                        Contactez-le pour organiser la remise de l'objet
-                      </p>
+                      <p className="text-blue-200 text-xs mt-2">{t('organiserRemise')}</p>
                     </div>
-                  </div>
-                )}
-
-                {/* Instructions paiement CARTE */}
-                {r.statut === 'PAYEE' && r.methodePaiement === 'CARTE' && (
-                  <div className="bg-blue-50 rounded-xl p-4 mb-4 border border-blue-100">
-                    <p className="font-semibold text-secondary-500 text-sm mb-1">💳 Paiement carte confirmé</p>
-                    <p className="text-gray-600 text-sm">
-                      Vos frais de <strong className="text-primary-500">{r.fraisLocataire} DT</strong> ont été reçus par Lokatun.
-                    </p>
                   </div>
                 )}
 
@@ -229,7 +220,7 @@ const MesReservations = () => {
                   <div className="bg-green-50 rounded-xl p-4 mb-4 border border-green-100">
                     <p className="font-semibold text-green-700 text-sm mb-1">💵 Paiement postal en cours de vérification</p>
                     <p className="text-gray-600 text-sm">
-                      Préparez <strong className="text-primary-500">{r.montantBase} DT</strong> en espèces pour la remise au propriétaire.
+                      Préparez <strong className="text-primary-500">{r.montantBase} DT</strong> en espèces pour la remise.
                     </p>
                   </div>
                 )}
@@ -252,9 +243,7 @@ const MesReservations = () => {
                                   ? 'bg-yellow-400 text-white shadow-sm'
                                   : 'bg-gray-100 text-gray-300 hover:bg-yellow-100'
                               }`}
-                            >
-                              ★
-                            </button>
+                            >★</button>
                           ))}
                         </div>
                         <textarea
@@ -284,7 +273,7 @@ const MesReservations = () => {
                     onClick={() => handleAnnuler(r.id)}
                     className="mt-4 text-sm text-red-500 hover:text-red-600 hover:underline transition"
                   >
-                    Annuler la réservation
+                    {t('annulerReservation')}
                   </button>
                 )}
               </div>

@@ -3,13 +3,18 @@
 // ============================================
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 const DetailAnnonce = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { utilisateur } = useAuth();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'darija';
+
   const [annonce, setAnnonce] = useState(null);
   const [chargement, setChargement] = useState(true);
   const [photoActive, setPhotoActive] = useState(0);
@@ -87,32 +92,33 @@ const DetailAnnonce = () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-sand-100" dir={isRTL ? 'rtl' : 'ltr'}>
 
       {/* Header */}
       <div className="bg-secondary-500 px-6 py-4">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <Link to="/annonces" className="flex items-center gap-2 text-white hover:text-primary-300 transition">
-            <span>←</span>
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-primary-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">L</span>
-              </div>
-              <span className="font-bold">Lokatun</span>
+            <span>{t('retour')}</span>
+            <div className="w-7 h-7 bg-primary-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">L</span>
             </div>
+            <span className="font-bold">Lokatun</span>
           </Link>
-          {utilisateur && (
-            <Link to="/dashboard" className="text-white text-sm hover:text-primary-300 transition">
-              {utilisateur.prenom}
-            </Link>
-          )}
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            {utilisateur && (
+              <Link to="/dashboard" className="text-white text-sm hover:text-primary-300 transition">
+                {t('monCompte')}
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* Colonne gauche — Photos + Infos */}
+          {/* Colonne gauche */}
           <div className="lg:col-span-2 space-y-4">
 
             {/* Photos */}
@@ -147,7 +153,7 @@ const DetailAnnonce = () => {
 
             {/* Infos annonce */}
             <div className="card p-6">
-              <span className="badge">{annonce.categorie}</span>
+              <span className="badge">{t(annonce.categorie.toLowerCase()) || annonce.categorie}</span>
               <h1 className="text-2xl font-bold text-secondary-500 mt-3">{annonce.titre}</h1>
               <p className="text-gray-500 text-sm mt-1 flex items-center gap-1">
                 <span>📍</span> {annonce.localisation}
@@ -157,7 +163,7 @@ const DetailAnnonce = () => {
 
             {/* Propriétaire */}
             <div className="card p-6">
-              <p className="text-sm font-semibold text-gray-700 mb-3">Proposé par</p>
+              <p className="text-sm font-semibold text-gray-700 mb-3">{t('proposePar')}</p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-secondary-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-lg">
@@ -177,25 +183,24 @@ const DetailAnnonce = () => {
 
           </div>
 
-          {/* Colonne droite — Prix + Réservation */}
+          {/* Colonne droite */}
           <div className="space-y-4">
 
             {/* Prix */}
             <div className="card p-6">
               <div className="flex items-end gap-2 mb-4">
                 <span className="text-3xl font-bold text-primary-500">{annonce.prixParJour} DT</span>
-                <span className="text-gray-400 text-sm mb-1">/ jour</span>
+                <span className="text-gray-400 text-sm mb-1">{t('parJour')}</span>
               </div>
 
-              {/* Récapitulatif frais */}
               <div className="bg-orange-50 rounded-xl p-4 text-sm space-y-2">
-                <p className="font-semibold text-secondary-500 mb-3">Récapitulatif des frais</p>
+                <p className="font-semibold text-secondary-500 mb-3">{t('total')}</p>
                 <div className="flex justify-between text-gray-600">
-                  <span>Prix de base</span>
-                  <span>{annonce.prixParJour} DT/jour</span>
+                  <span>{t('montantBase')}</span>
+                  <span>{annonce.prixParJour} DT{t('parJour')}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Frais de service (5%)</span>
+                  <span>{t('fraisService')}</span>
                   <span>{(annonce.prixParJour * 0.05).toFixed(2)} DT</span>
                 </div>
                 {nombreJours > 0 && (
@@ -205,7 +210,7 @@ const DetailAnnonce = () => {
                       <span>{nombreJours} jour(s)</span>
                     </div>
                     <div className="flex justify-between font-bold text-primary-500 border-t pt-2">
-                      <span>Total</span>
+                      <span>{t('total')}</span>
                       <span>{(annonce.prixParJour * 1.05 * nombreJours).toFixed(2)} DT</span>
                     </div>
                   </>
@@ -220,13 +225,13 @@ const DetailAnnonce = () => {
                   onClick={handleSupprimer}
                   className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition"
                 >
-                  Supprimer l'annonce
+                  {t('supprimerAnnonce')}
                 </button>
               ) : utilisateur ? (
                 <div className="space-y-3">
-                  <p className="font-semibold text-secondary-500">Réserver cet objet</p>
+                  <p className="font-semibold text-secondary-500">{t('reserverObjet')}</p>
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Date de début</label>
+                    <label className="text-xs text-gray-500 mb-1 block">{t('dateDebut')}</label>
                     <input
                       type="date"
                       value={dateDebut}
@@ -235,7 +240,7 @@ const DetailAnnonce = () => {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Date de fin</label>
+                    <label className="text-xs text-gray-500 mb-1 block">{t('dateFin')}</label>
                     <input
                       type="date"
                       value={dateFin}
@@ -244,14 +249,14 @@ const DetailAnnonce = () => {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Méthode de paiement</label>
+                    <label className="text-xs text-gray-500 mb-1 block">{t('methodePaiement')}</label>
                     <select
                       value={methodePaiement}
                       onChange={(e) => setMethodePaiement(e.target.value)}
                       className="input-field"
-                  >
-                    <option value="CASH">💵 Cash à la remise</option>
-                    <option value="CARTE">💳 Carte bancaire / D17 (via Konnect)</option>
+                    >
+                      <option value="CASH">{t('cashRemise')}</option>
+                      <option value="CARTE">{t('carteBancaire')}</option>
                     </select>
                   </div>
                   {erreurReservation && (
@@ -269,14 +274,14 @@ const DetailAnnonce = () => {
                     disabled={chargementReservation}
                     className="w-full btn-primary disabled:opacity-50"
                   >
-                    {chargementReservation ? 'Envoi...' : 'Demander la réservation'}
+                    {chargementReservation ? '...' : t('demanderReservation')}
                   </button>
                 </div>
               ) : (
                 <div className="text-center">
-                  <p className="text-gray-500 text-sm mb-4">Connectez-vous pour réserver</p>
+                  <p className="text-gray-500 text-sm mb-4">{t('seConnecterReserver')}</p>
                   <Link to="/login" className="w-full btn-primary block text-center">
-                    Se connecter
+                    {t('seConnecter')}
                   </Link>
                 </div>
               )}
