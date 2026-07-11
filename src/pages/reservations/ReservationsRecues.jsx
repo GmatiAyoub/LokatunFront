@@ -3,7 +3,9 @@
 // ============================================
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../../api/axios';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 const statutColors = {
   EN_ATTENTE: 'bg-yellow-100 text-yellow-700',
@@ -24,6 +26,8 @@ const statutIcons = {
 };
 
 const ReservationsRecues = () => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'darija';
   const [reservations, setReservations] = useState([]);
   const [chargement, setChargement] = useState(true);
 
@@ -59,7 +63,7 @@ const ReservationsRecues = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-sand-100" dir={isRTL ? 'rtl' : 'ltr'}>
 
       {/* Header */}
       <div className="bg-secondary-500 px-6 py-4">
@@ -71,21 +75,24 @@ const ReservationsRecues = () => {
             </div>
             <span className="font-bold">Lokatun</span>
           </Link>
-          <Link to="/dashboard" className="text-white text-sm hover:text-primary-300 transition">
-            Mon compte
-          </Link>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <Link to="/dashboard" className="text-white text-sm hover:text-primary-300 transition">
+              {t('monCompte')}
+            </Link>
+          </div>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-secondary-500 mb-6">Réservations Reçues</h2>
+        <h2 className="text-2xl font-bold text-secondary-500 mb-6">{t('reservationsRecues')}</h2>
 
         {reservations.length === 0 ? (
           <div className="card text-center py-20">
             <p className="text-4xl mb-4">📬</p>
             <p className="text-gray-500 font-medium">Vous n'avez pas encore reçu de réservations</p>
             <Link to="/annonces/creer" className="inline-block mt-4 btn-primary">
-              Publier une annonce
+              {t('publierAnnonce')}
             </Link>
           </div>
         ) : (
@@ -97,11 +104,7 @@ const ReservationsRecues = () => {
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex gap-4">
                     {r.annonce.photos?.[0] ? (
-                      <img
-                        src={r.annonce.photos[0].url}
-                        alt={r.annonce.titre}
-                        className="w-20 h-20 object-cover rounded-xl"
-                      />
+                      <img src={r.annonce.photos[0].url} alt={r.annonce.titre} className="w-20 h-20 object-cover rounded-xl" />
                     ) : (
                       <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center text-2xl">📷</div>
                     )}
@@ -115,24 +118,25 @@ const ReservationsRecues = () => {
                           {r.locataire.prenom} {r.locataire.nom}
                         </p>
                       </div>
-{/* Téléphone — visible uniquement si PAYEE ou TERMINEE */}
-{(r.statut === 'PAYEE' || r.statut === 'TERMINEE') && (
-  <p className="text-gray-400 text-sm">📞 {r.locataire.telephone}</p>
-)}                      <p className="text-gray-400 text-sm mt-1">
+                      {/* Téléphone visible uniquement si PAYEE ou TERMINEE */}
+                      {(r.statut === 'PAYEE' || r.statut === 'TERMINEE') && (
+                        <p className="text-gray-400 text-sm">📞 {r.locataire.telephone}</p>
+                      )}
+                      <p className="text-gray-400 text-sm mt-1">
                         📅 Du {new Date(r.dateDebut).toLocaleDateString('fr-TN')} au{' '}
                         {new Date(r.dateFin).toLocaleDateString('fr-TN')}
                       </p>
                     </div>
                   </div>
                   <span className={`text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 ${statutColors[r.statut]}`}>
-                    {statutIcons[r.statut]} {r.statut.replace('_', ' ')}
+                    {statutIcons[r.statut]} {t(r.statut.toLowerCase()) || r.statut.replace('_', ' ')}
                   </span>
                 </div>
 
                 {/* Récapitulatif financier */}
                 <div className="bg-orange-50 rounded-xl p-4 mb-4 text-sm border border-orange-100">
                   <div className="flex justify-between text-gray-600">
-                    <span>Montant de base</span>
+                    <span>{t('montantBase')}</span>
                     <span>{r.montantBase} DT</span>
                   </div>
                   <div className="flex justify-between text-gray-600 mt-1">
@@ -144,12 +148,12 @@ const ReservationsRecues = () => {
                     <span>{r.montantProprietaire} DT</span>
                   </div>
                   <div className="flex justify-between text-gray-400 mt-1">
-                    <span>Paiement</span>
+                    <span>{t('paiement')}</span>
                     <span>{r.methodePaiement === 'CASH' ? '💵 Cash' : '💳 Carte / D17'}</span>
                   </div>
                 </div>
 
-                {/* Boutons */}
+                {/* Boutons accepter/refuser */}
                 {r.statut === 'EN_ATTENTE' && (
                   <div className="flex gap-3">
                     <button
@@ -165,6 +169,16 @@ const ReservationsRecues = () => {
                       ❌ Refuser
                     </button>
                   </div>
+                )}
+
+                {/* Bouton Marquer comme terminée */}
+                {r.statut === 'PAYEE' && (
+                  <button
+                    onClick={() => handleAction(r.id, 'terminer')}
+                    className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 rounded-xl transition text-sm mt-3"
+                  >
+                    🏁 Marquer comme terminée
+                  </button>
                 )}
 
               </div>
