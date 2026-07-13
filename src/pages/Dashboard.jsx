@@ -5,12 +5,23 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import useNotifications from '../hooks/useNotifications';
+
+const Badge = ({ count }) => {
+  if (!count || count === 0) return null;
+  return (
+    <span className="inline-flex items-center justify-center w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full">
+      {count > 9 ? '9+' : count}
+    </span>
+  );
+};
 
 const Dashboard = () => {
   const { utilisateur, logout } = useAuth();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'darija';
+  const { notifications } = useNotifications();
 
   const handleLogout = () => {
     logout();
@@ -29,11 +40,70 @@ const Dashboard = () => {
             </div>
             <span className="font-bold">Lokatun</span>
           </Link>
-          <LanguageSwitcher />
+          <div className="flex items-center gap-3">
+            {notifications.total > 0 && (
+              <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+                {notifications.total} action(s) requise(s)
+              </div>
+            )}
+            <LanguageSwitcher />
+          </div>
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-8">
+
+        {/* Alertes importantes */}
+        {notifications.aPayerLocataire > 0 && (
+          <div className="bg-primary-500 text-white rounded-2xl p-4 mb-4 flex justify-between items-center">
+            <div>
+              <p className="font-bold text-sm">💳 Paiement requis !</p>
+              <p className="text-xs text-orange-100 mt-1">
+                {notifications.aPayerLocataire} réservation(s) acceptée(s) — payez les frais Lokatun
+              </p>
+            </div>
+            <Link
+              to="/mes-reservations"
+              className="bg-white text-primary-500 text-xs font-bold px-3 py-2 rounded-xl"
+            >
+              Voir →
+            </Link>
+          </div>
+        )}
+
+        {notifications.enAttente > 0 && (
+          <div className="bg-yellow-500 text-white rounded-2xl p-4 mb-4 flex justify-between items-center">
+            <div>
+              <p className="font-bold text-sm">⏳ Réservations en attente !</p>
+              <p className="text-xs text-yellow-100 mt-1">
+                {notifications.enAttente} demande(s) à accepter ou refuser
+              </p>
+            </div>
+            <Link
+              to="/reservations-recues"
+              className="bg-white text-yellow-600 text-xs font-bold px-3 py-2 rounded-xl"
+            >
+              Voir →
+            </Link>
+          </div>
+        )}
+
+        {notifications.payees > 0 && (
+          <div className="bg-green-500 text-white rounded-2xl p-4 mb-4 flex justify-between items-center">
+            <div>
+              <p className="font-bold text-sm">🏁 Location à terminer !</p>
+              <p className="text-xs text-green-100 mt-1">
+                {notifications.payees} location(s) payée(s) — marquez comme terminée
+              </p>
+            </div>
+            <Link
+              to="/reservations-recues"
+              className="bg-white text-green-600 text-xs font-bold px-3 py-2 rounded-xl"
+            >
+              Voir →
+            </Link>
+          </div>
+        )}
 
         {/* Profil */}
         <div className="card p-6 mb-6">
@@ -71,17 +141,27 @@ const Dashboard = () => {
           <div className="grid grid-cols-2 gap-3">
             <Link
               to="/mes-reservations"
-              className="card p-4 text-center hover:border-primary-200 border border-transparent"
+              className="card p-4 text-center hover:border-primary-200 border border-transparent relative"
             >
               <p className="text-2xl mb-1">📅</p>
               <p className="font-semibold text-secondary-500 text-sm">{t('mesReservations')}</p>
+              {notifications.aPayerLocataire > 0 && (
+                <div className="absolute -top-2 -right-2">
+                  <Badge count={notifications.aPayerLocataire} />
+                </div>
+              )}
             </Link>
             <Link
               to="/reservations-recues"
-              className="card p-4 text-center hover:border-primary-200 border border-transparent"
+              className="card p-4 text-center hover:border-primary-200 border border-transparent relative"
             >
               <p className="text-2xl mb-1">📬</p>
               <p className="font-semibold text-secondary-500 text-sm">{t('reservationsRecues')}</p>
+              {(notifications.enAttente + notifications.payees) > 0 && (
+                <div className="absolute -top-2 -right-2">
+                  <Badge count={notifications.enAttente + notifications.payees} />
+                </div>
+              )}
             </Link>
           </div>
 
