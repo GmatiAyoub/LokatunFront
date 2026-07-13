@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
+import useNotifications from '../../hooks/useNotifications';
 
 const CATEGORIES = ['Tous', 'Sport', 'Électronique', 'Vêtements', 'Maison', 'Jardinage', 'Autre'];
 
@@ -43,6 +44,8 @@ const ListeAnnonces = () => {
     prixMax: '',
     localisation: '',
   });
+
+  const notifications = useNotifications();
 
   const chargerAnnonces = async () => {
     setChargement(true);
@@ -99,12 +102,17 @@ const ListeAnnonces = () => {
               {t('publier')}
             </Link>
             {utilisateur ? (
-              <Link to="/dashboard" className="btn-ghost">
-                {utilisateur.prenom}
-              </Link>
-            ) : (
-              <Link to="/login" className="btn-ghost">
-                {t('connexion')}
+  <Link to="/dashboard" className="btn-ghost relative flex items-center gap-2">
+    {utilisateur.prenom}
+    {notifications.notifications?.total > 0 && (
+      <span className="inline-flex items-center justify-center w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
+        {notifications.notifications?.total > 9 ? '9+' : notifications.notifications?.total}
+      </span>
+    )}
+  </Link>
+) : (
+  <Link to="/login" className="btn-ghost">
+    {t('connexion')}
               </Link>
             )}
           </div>
