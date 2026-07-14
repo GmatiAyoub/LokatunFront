@@ -89,21 +89,37 @@ const Dashboard = () => {
         )}
 
         {notifications.payees > 0 && (
-          <div className="bg-green-500 text-white rounded-2xl p-4 mb-4 flex justify-between items-center">
-            <div>
-              <p className="font-bold text-sm">🏁 Location à terminer !</p>
-              <p className="text-xs text-green-100 mt-1">
-                {notifications.payees} location(s) payée(s) — marquez comme terminée
-              </p>
-            </div>
-            <Link
-              to="/reservations-recues"
-              className="bg-white text-green-600 text-xs font-bold px-3 py-2 rounded-xl"
-            >
-              Voir →
-            </Link>
-          </div>
-        )}
+  <div className="bg-green-500 text-white rounded-2xl p-4 mb-4 flex justify-between items-center">
+    <div>
+      <p className="font-bold text-sm">💰 Commission à payer !</p>
+      <p className="text-xs text-green-100 mt-1">
+        {notifications.payees} location(s) payée(s) — payez votre commission pour continuer
+      </p>
+    </div>
+    <Link
+      to="/reservations-recues"
+      className="bg-white text-green-600 text-xs font-bold px-3 py-2 rounded-xl"
+    >
+      Voir →
+    </Link>
+  </div>
+)}
+        {notifications.commissionPayees > 0 && (
+  <div className="bg-purple-500 text-white rounded-2xl p-4 mb-4 flex justify-between items-center">
+    <div>
+      <p className="font-bold text-sm">🏁 Location prête à terminer !</p>
+      <p className="text-xs text-purple-100 mt-1">
+        {notifications.commissionPayees} location(s) — commission confirmée, marquez comme terminée
+      </p>
+    </div>
+    <Link
+      to="/reservations-recues"
+      className="bg-white text-purple-600 text-xs font-bold px-3 py-2 rounded-xl"
+    >
+      Voir →
+    </Link>
+  </div>
+)}
 
         {/* Profil */}
         <div className="card p-6 mb-6">
@@ -152,17 +168,17 @@ const Dashboard = () => {
               )}
             </Link>
             <Link
-              to="/reservations-recues"
-              className="card p-4 text-center hover:border-primary-200 border border-transparent relative"
-            >
-              <p className="text-2xl mb-1">📬</p>
-              <p className="font-semibold text-secondary-500 text-sm">{t('reservationsRecues')}</p>
-              {(notifications.enAttente + notifications.payees) > 0 && (
-                <div className="absolute -top-2 -right-2">
-                  <Badge count={notifications.enAttente + notifications.payees} />
-                </div>
-              )}
-            </Link>
+  to="/reservations-recues"
+  className="card p-4 text-center hover:border-primary-200 border border-transparent relative"
+>
+  <p className="text-2xl mb-1">📬</p>
+  <p className="font-semibold text-secondary-500 text-sm">{t('reservationsRecues')}</p>
+  {(notifications.enAttente + notifications.payees + notifications.commissionPayees) > 0 && (
+    <div className="absolute -top-2 -right-2">
+      <Badge count={notifications.enAttente + notifications.payees + notifications.commissionPayees} />
+    </div>
+  )}
+</Link>
           </div>
 
           <Link
