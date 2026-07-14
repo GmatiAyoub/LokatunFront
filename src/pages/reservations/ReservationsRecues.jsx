@@ -11,15 +11,17 @@ const statutColors = {
   EN_ATTENTE: 'bg-yellow-100 text-yellow-700',
   ACCEPTEE: 'bg-blue-100 text-blue-700',
   PAYEE: 'bg-green-100 text-green-700',
+  COMMISSION_PAYEE: 'bg-purple-100 text-purple-700',
   REFUSEE: 'bg-red-100 text-red-700',
   ANNULEE: 'bg-gray-100 text-gray-700',
-  TERMINEE: 'bg-purple-100 text-purple-700',
+  TERMINEE: 'bg-secondary-100 text-secondary-700',
 };
 
 const statutIcons = {
   EN_ATTENTE: '⏳',
   ACCEPTEE: '✅',
   PAYEE: '💰',
+  COMMISSION_PAYEE: '📮',
   REFUSEE: '❌',
   ANNULEE: '🚫',
   TERMINEE: '🏁',
@@ -118,8 +120,7 @@ const ReservationsRecues = () => {
                           {r.locataire.prenom} {r.locataire.nom}
                         </p>
                       </div>
-                      {/* Téléphone visible uniquement si PAYEE ou TERMINEE */}
-                      {(r.statut === 'PAYEE' || r.statut === 'TERMINEE') && (
+                      {(r.statut === 'PAYEE' || r.statut === 'COMMISSION_PAYEE' || r.statut === 'TERMINEE') && (
                         <p className="text-gray-400 text-sm">📞 {r.locataire.telephone}</p>
                       )}
                       <p className="text-gray-400 text-sm mt-1">
@@ -129,7 +130,7 @@ const ReservationsRecues = () => {
                     </div>
                   </div>
                   <span className={`text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 ${statutColors[r.statut]}`}>
-                    {statutIcons[r.statut]} {t(r.statut.toLowerCase()) || r.statut.replace('_', ' ')}
+                    {statutIcons[r.statut]} {r.statut.replace('_', ' ')}
                   </span>
                 </div>
 
@@ -171,14 +172,44 @@ const ReservationsRecues = () => {
                   </div>
                 )}
 
-                {/* Bouton Marquer comme terminée */}
+                {/* Bouton payer commission */}
                 {r.statut === 'PAYEE' && (
-                  <button
-                    onClick={() => handleAction(r.id, 'terminer')}
-                    className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 rounded-xl transition text-sm mt-3"
-                  >
-                    🏁 Marquer comme terminée
-                  </button>
+                  <div className="mt-3 space-y-2">
+                    <div className="bg-yellow-50 rounded-xl p-3 border border-yellow-100">
+                      <p className="text-yellow-700 text-xs font-semibold">
+                        💰 Le locataire a payé ses frais !
+                      </p>
+                      <p className="text-gray-500 text-xs mt-1">
+                        Payez votre commission de <strong>{r.commissionProprietaire.toFixed(2)} DT</strong> pour terminer la location.
+                      </p>
+                    </div>
+                    <Link
+                      to={`/paiement-commission/${r.id}`}
+                      className="w-full btn-primary text-center block text-sm"
+                    >
+                      📮 Payer ma commission ({r.commissionProprietaire.toFixed(2)} DT)
+                    </Link>
+                  </div>
+                )}
+
+                {/* Bouton terminer — commission payée */}
+                {r.statut === 'COMMISSION_PAYEE' && (
+                  <div className="mt-3 space-y-2">
+                    <div className="bg-green-50 rounded-xl p-3 border border-green-100">
+                      <p className="text-green-700 text-xs font-semibold">
+                        ✅ Commission confirmée !
+                      </p>
+                      <p className="text-gray-500 text-xs mt-1">
+                        Vous pouvez maintenant terminer la location.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleAction(r.id, 'terminer')}
+                      className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 rounded-xl transition text-sm"
+                    >
+                      🏁 Marquer comme terminée
+                    </button>
+                  </div>
                 )}
 
               </div>
