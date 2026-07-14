@@ -61,7 +61,12 @@ const CreerAnnonce = () => {
 
       navigate('/annonces');
     } catch (err) {
-      setErreur(err.response?.data?.message || 'Une erreur est survenue');
+      const msg = err.response?.data?.message || 'Une erreur est survenue';
+const resId = err.response?.data?.reservationId;
+setErreur(msg);
+if (resId) {
+  setTimeout(() => navigate(`/paiement-commission/${resId}`), 2000);
+}
     } finally {
       setChargement(false);
     }
