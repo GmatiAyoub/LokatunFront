@@ -31,7 +31,26 @@ const Paiement = () => {
     charger();
   }, [reservationId]);
 
-  const handleConfirmerPaiement = async () => {
+  const handlePaiementKonnect = async () => {
+  try {
+    const res = await api.post('/paiement/initier-locataire', {
+      reservationId: parseInt(reservationId),
+    });
+
+    if (res.data.statique) {
+      // Mode statique — KYC en attente
+      setEtape(2);
+      setMethode('CASH');
+    } else {
+      // Rediriger vers Konnect
+      window.location.href = res.data.paymentUrl;
+    }
+  } catch (err) {
+    alert(err.response?.data?.message || 'Erreur');
+  }
+};
+
+const handleConfirmerPaiement = async () => {
   try {
     await api.put(`/reservations/${reservationId}/payer`);
     setEtape(3);
@@ -140,18 +159,20 @@ const Paiement = () => {
                 </button>
 
                 <button
-                    onClick={() => setMethode('CARTE')}
-                    className={`p-4 rounded-xl border-2 transition text-left ${
-                        methode === 'CARTE'
-                            ? 'border-primary-500 bg-orange-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                            }`}
+  onClick={() => setMethode('CARTE')}
+  className={`p-4 rounded-xl border-2 transition text-left ${
+    methode === 'CARTE'
+      ? 'border-primary-500 bg-orange-50'
+      : 'border-gray-200 hover:border-gray-300'
+  }`}
 >
-                <div className="text-2xl mb-2">💳</div>
-                <p className="font-semibold text-secondary-500 text-sm">Carte bancaire</p>
-                <p className="text-gray-400 text-xs mt-1">Paiement sécurisé via Konnect</p>
-                <span className="inline-block mt-1 text-xs bg-primary-100 text-primary-500 px-2 py-0.5 rounded-full">Bientôt</span>
-                </button>
+  <div className="text-2xl mb-2">💳</div>
+  <p className="font-semibold text-secondary-500 text-sm">Carte / D17</p>
+  <p className="text-gray-400 text-xs mt-1">Via Konnect — sécurisé</p>
+  <span className="inline-block mt-1 text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded-full">
+    Disponible
+  </span>
+</button>
                 </div>
 
                 <button
