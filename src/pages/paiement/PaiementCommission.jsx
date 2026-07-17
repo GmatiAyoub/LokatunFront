@@ -30,14 +30,33 @@ const PaiementCommission = () => {
     charger();
   }, [reservationId]);
 
-  const handleConfirmer = async () => {
-    try {
-      await api.put(`/reservations/${reservationId}/commission-payee`);
-      setEtape(3);
-    } catch (err) {
-      alert(err.response?.data?.message || 'Erreur');
+  const handlePaiementKonnect = async () => {
+  try {
+    const res = await api.post('/paiement/initier-proprietaire', {
+      reservationId: parseInt(reservationId),
+    });
+
+    if (res.data.statique) {
+      // Mode statique — KYC en attente
+      setEtape(2);
+      setMethode('CASH');
+    } else {
+      // Rediriger vers Konnect
+      window.location.href = res.data.paymentUrl;
     }
-  };
+  } catch (err) {
+    alert(err.response?.data?.message || 'Erreur');
+  }
+};
+
+const handleConfirmer = async () => {
+  try {
+    await api.put(`/reservations/${reservationId}/commission-payee`);
+    setEtape(3);
+  } catch (err) {
+    alert(err.response?.data?.message || 'Erreur');
+  }
+};
 
   if (chargement) return (
     <div className="min-h-screen flex items-center justify-center">
