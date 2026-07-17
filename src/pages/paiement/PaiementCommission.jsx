@@ -184,12 +184,17 @@ const handleConfirmer = async () => {
 </button>
               </div>
               <button
-                onClick={() => methode === 'CARTE' ? null : setEtape(2)}
-                disabled={methode === 'CARTE'}
-                className="w-full btn-primary mt-4 disabled:opacity-50"
-              >
-                Continuer →
-              </button>
+  onClick={() => {
+    if (methode === 'CARTE') {
+      handlePaiementKonnect();
+    } else {
+      setEtape(2);
+    }
+  }}
+  className="w-full btn-primary mt-4"
+>
+  {methode === 'CARTE' ? '💳 Payer via Konnect' : 'Continuer →'}
+</button>
             </div>
           </div>
         )}
