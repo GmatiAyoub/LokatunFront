@@ -168,18 +168,20 @@ const handleConfirmer = async () => {
                   <p className="text-gray-400 text-xs mt-1">Virement postal au numéro Lokatun</p>
                 </button>
                 <button
-                  onClick={() => setMethode('CARTE')}
-                  className={`p-4 rounded-xl border-2 transition text-left ${
-                    methode === 'CARTE'
-                      ? 'border-primary-500 bg-orange-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="text-2xl mb-2">💳</div>
-                  <p className="font-semibold text-secondary-500 text-sm">Carte bancaire</p>
-                  <p className="text-gray-400 text-xs mt-1">Via Konnect</p>
-                  <span className="inline-block mt-1 text-xs bg-primary-100 text-primary-500 px-2 py-0.5 rounded-full">Bientôt</span>
-                </button>
+  onClick={() => setMethode('CARTE')}
+  className={`p-4 rounded-xl border-2 transition text-left ${
+    methode === 'CARTE'
+      ? 'border-primary-500 bg-orange-50'
+      : 'border-gray-200 hover:border-gray-300'
+  }`}
+>
+  <div className="text-2xl mb-2">💳</div>
+  <p className="font-semibold text-secondary-500 text-sm">Carte / D17</p>
+  <p className="text-gray-400 text-xs mt-1">Via Konnect — sécurisé</p>
+  <span className="inline-block mt-1 text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded-full">
+    Disponible
+  </span>
+</button>
               </div>
               <button
                 onClick={() => methode === 'CARTE' ? null : setEtape(2)}
