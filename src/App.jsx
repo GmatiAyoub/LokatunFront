@@ -18,6 +18,8 @@ import AdminAnnonces from './pages/admin/AdminAnnonces';
 import AdminLitiges from './pages/admin/AdminLitiges';
 import Paiement from './pages/paiement/Paiement';
 import PaiementCommission from './pages/paiement/PaiementCommission';
+import PaiementSucces from './pages/paiement/PaiementSucces';
+import PaiementEchec from './pages/paiement/PaiementEchec'; 
 
 const RouteProtegee = ({ children }) => {
   const { utilisateur, chargement } = useAuth();
@@ -62,6 +64,14 @@ const App = () => {
           <Route
             path="/paiement-commission/:reservationId"
             element={<RouteProtegee><PaiementCommission /></RouteProtegee>}
+          />
+          <Route
+            path="/paiement-succes/:reservationId"
+            element={<RouteProtegee><PaiementSucces /></RouteProtegee>}
+          />
+          <Route
+            path="/paiement-echec/:reservationId"
+            element={<RouteProtegee><PaiementEchec /></RouteProtegee>}
           />
           <Route
             path="/reservations-recues"
