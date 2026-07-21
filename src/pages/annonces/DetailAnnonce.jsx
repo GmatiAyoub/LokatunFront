@@ -13,7 +13,7 @@ const DetailAnnonce = () => {
   const navigate = useNavigate();
   const { utilisateur } = useAuth();
   const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === 'darija';
+  const isRTL = i18n.language === 'ar';
 
   const [annonce, setAnnonce] = useState(null);
   const [chargement, setChargement] = useState(true);

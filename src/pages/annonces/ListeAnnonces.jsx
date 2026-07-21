@@ -33,7 +33,7 @@ const CATEGORY_COLORS = {
 const ListeAnnonces = () => {
   const { utilisateur } = useAuth();
   const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === 'darija';
+  const isRTL = i18n.language === 'ar';
 
   const [annonces, setAnnonces] = useState([]);
   const [chargement, setChargement] = useState(true);

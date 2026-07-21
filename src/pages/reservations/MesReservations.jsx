@@ -27,7 +27,7 @@ const statutIcons = {
 
 const MesReservations = () => {
   const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === 'darija';
+  const isRTL = i18n.language === 'ar';
   const [reservations, setReservations] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [noteForm, setNoteForm] = useState({});

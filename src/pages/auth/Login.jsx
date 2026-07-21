@@ -12,7 +12,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === 'darija';
+  const isRTL = i18n.language === 'ar';
 
   const [formData, setFormData] = useState({
     email: '',

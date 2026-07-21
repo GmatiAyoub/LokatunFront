@@ -20,7 +20,7 @@ const Dashboard = () => {
   const { utilisateur, logout } = useAuth();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === 'darija';
+  const isRTL = i18n.language === 'ar';
   const { notifications } = useNotifications();
 
   const handleLogout = () => {
