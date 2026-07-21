@@ -190,6 +190,7 @@ const resources = {
       autre: 'أخرى',
     },
   },
+};
 
 i18n
   .use(initReactI18next)
