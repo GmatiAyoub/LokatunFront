@@ -20,6 +20,7 @@ import Paiement from './pages/paiement/Paiement';
 import PaiementCommission from './pages/paiement/PaiementCommission';
 import PaiementSucces from './pages/paiement/PaiementSucces';
 import PaiementEchec from './pages/paiement/PaiementEchec'; 
+import NotFound from './pages/NotFound';
 
 const RouteProtegee = ({ children }) => {
   const { utilisateur, chargement } = useAuth();
@@ -108,8 +109,8 @@ const App = () => {
             element={<RouteAdmin><AdminLitiges /></RouteAdmin>}
           />
 
-          {/* Redirection par défaut */}
-          <Route path="*" element={<Navigate to="/annonces" />} />
+          {/* Redirection par défaut * a la page not found */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
