@@ -96,6 +96,7 @@ const App = () => {
             path="/admin"
             element={<RouteAdmin><AdminDashboard /></RouteAdmin>}
           />
+          {/* Admin - Sous-pages */}
           <Route
             path="/admin/utilisateurs"
             element={<RouteAdmin><AdminUtilisateurs /></RouteAdmin>}
